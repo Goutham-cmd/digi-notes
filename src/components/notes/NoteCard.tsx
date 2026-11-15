@@ -16,6 +16,8 @@ import {
   Archive,
   Presentation,
   FileCode,
+  Play,
+  Video,
 } from 'lucide-react';
 
 interface NoteCardProps {
@@ -94,6 +96,14 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
             <span className="text-[11px] font-mono font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">
               {note.courseCode}
             </span>
+
+            {/* Video Lecture Pill */}
+            {note.videoUrl && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-rose-700 bg-rose-50 border border-rose-200/80 px-2 py-0.5 rounded-md">
+                <Play className="w-2.5 h-2.5 fill-rose-600 text-rose-600" />
+                Video
+              </span>
+            )}
 
             {/* Moderation Status Pill */}
             {note.status && (
@@ -233,6 +243,17 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </>
+            )}
+
+            {note.videoUrl && (
+              <button
+                onClick={() => openPreviewModal(note)}
+                className="btn-3d inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 transition-colors"
+                title="Watch attached video lecture"
+              >
+                <Play className="w-3 h-3 fill-rose-600 text-rose-600" />
+                <span>Watch</span>
+              </button>
             )}
 
             <button

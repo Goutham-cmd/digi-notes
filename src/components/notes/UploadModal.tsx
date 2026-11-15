@@ -11,6 +11,8 @@ import {
   CheckCircle2,
   Paperclip,
   Trash2,
+  Play,
+  Video,
 } from 'lucide-react';
 import { FileType } from '@/types';
 
@@ -23,6 +25,7 @@ export default function UploadModal() {
   const [semester, setSemester] = useState('Semester 5');
   const [courseCode, setCourseCode] = useState('');
   const [tagsInput, setTagsInput] = useState('');
+  const [videoUrl, setVideoUrl] = useState('');
   const [fileType, setFileType] = useState<FileType>('PDF');
   const [selectedFile, setSelectedFile] = useState<{ name: string; size: string } | null>(null);
   const [rawFile, setRawFile] = useState<File | null>(null);
@@ -105,6 +108,7 @@ export default function UploadModal() {
         semester,
         fileType,
         status: 'Published',
+        videoUrl: videoUrl.trim() || undefined,
       },
       rawFile
     );
@@ -124,6 +128,7 @@ export default function UploadModal() {
     setDescription('');
     setCourseCode('');
     setTagsInput('');
+    setVideoUrl('');
     setSelectedFile(null);
     setRawFile(null);
     setErrors({});
@@ -274,6 +279,30 @@ export default function UploadModal() {
                 <AlertCircle className="w-3 h-3" /> {errors.description}
               </p>
             )}
+          </div>
+
+          {/* YouTube / Video Lecture Link */}
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Video className="w-4 h-4 text-rose-600" />
+                Attach Video Lecture / YouTube URL <span className="text-slate-400 font-normal">(Optional)</span>
+              </span>
+              <span className="text-[11px] text-slate-400 font-normal">YouTube, Vimeo</span>
+            </label>
+            <div className="relative">
+              <Play className="absolute left-3 top-2.5 w-4 h-4 text-rose-500 fill-rose-500" />
+              <input
+                type="url"
+                placeholder="https://www.youtube.com/watch?v=... (paste the lecture video you watched)"
+                value={videoUrl}
+                onChange={(e) => setVideoUrl(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-slate-200 rounded-xl placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+              />
+            </div>
+            <p className="text-[11px] text-slate-400 mt-1">
+              Pair your notes with the tutorial or lecture recording so peers can watch along!
+            </p>
           </div>
 
           {/* File Upload Dropzone */}

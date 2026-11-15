@@ -40,6 +40,7 @@ interface AppContextType {
       semester: string;
       fileType: Note['fileType'];
       status?: Note['status'];
+      videoUrl?: string;
     },
     rawFile: File
   ) => Promise<boolean>;
@@ -481,6 +482,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       semester: string;
       fileType: Note['fileType'];
       status?: Note['status'];
+      videoUrl?: string;
     },
     rawFile: File
   ): Promise<boolean> => {
@@ -578,6 +580,34 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           : `"${newNoteData.title}" is in queue. It will appear on Explore once approved by an admin.`,
         type: 'success',
       });
+
+      const newLocalNote: Note = {
+        id: `note-${Date.now()}`,
+        title: newNoteData.title,
+        description: newNoteData.description,
+        subject: newNoteData.subjectName,
+        courseCode: newNoteData.courseCode,
+        semester: newNoteData.semester,
+        fileType: newNoteData.fileType,
+        fileName: rawFile.name,
+        fileSize: sizeMB,
+        uploader: {
+          name: userProfile.name,
+          avatar: userProfile.avatar,
+          department: userProfile.department,
+          isCurrentUser: true,
+        },
+        uploaderId: user.id,
+        downloadsCount: 0,
+        rating: 5.0,
+        reviewsCount: 1,
+        isBookmarked: false,
+        status: initialStatus,
+        videoUrl: newNoteData.videoUrl,
+        uploadedAt: 'Just now',
+        tags: [newNoteData.subjectName, newNoteData.semester, 'Student Upload'],
+      };
+      setNotes((prev) => [newLocalNote, ...prev]);
 
       await fetchNotes();
       setIsUploadModalOpen(false);

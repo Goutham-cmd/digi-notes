@@ -1,4 +1,4 @@
-export type FileType = 'PDF' | 'DOCX' | 'ZIP' | 'PPTX';
+export type FileType = 'PDF' | 'DOCX' | 'ZIP' | 'PPTX' | 'VIDEO';
 export type NoteStatus = 'pending' | 'published' | 'rejected' | 'Published' | 'In Review' | 'Draft';
 export type NavTab = 'dashboard' | 'explore' | 'uploads' | 'bookmarks' | 'categories' | 'settings' | 'admin';
 export type AdminTab = 'overview' | 'moderation' | 'users' | 'resources' | 'subjects' | 'logs';
@@ -31,6 +31,8 @@ export interface Note {
   isBookmarked: boolean;
   status: NoteStatus;
   rejectionReason?: string;
+  videoUrl?: string;
+  videoPlatform?: 'YouTube' | 'Vimeo' | 'Other';
   uploadedAt: string;
   tags: string[];
   isRecommended?: boolean;

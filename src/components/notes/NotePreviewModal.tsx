@@ -14,7 +14,11 @@ import {
   FileCheck,
   ShieldCheck,
   Tag,
+  Video,
+  Play,
+  ExternalLink,
 } from 'lucide-react';
+import { getEmbedUrl } from '@/lib/videoUtils';
 
 export default function NotePreviewModal() {
   const { previewNote, closePreviewModal, toggleBookmark, downloadNote, addToast } = useApp();
@@ -143,6 +147,59 @@ export default function NotePreviewModal() {
               {previewNote.description}
             </p>
           </div>
+
+          {/* Attached Video Lecture Section */}
+          {previewNote.videoUrl && (
+            <div className="bg-slate-900 rounded-2xl p-4 text-white shadow-md border border-slate-800">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-rose-600/20 text-rose-500 flex items-center justify-center border border-rose-500/30">
+                    <Video className="w-4 h-4 text-rose-500" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
+                      Watch Video Lecture Companion
+                    </h4>
+                    <p className="text-[11px] text-slate-400">
+                      Curated video tutorial corresponding to this study material
+                    </p>
+                  </div>
+                </div>
+
+                <a
+                  href={previewNote.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-semibold text-slate-200 transition-colors"
+                >
+                  <span>Open in YouTube</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                </a>
+              </div>
+
+              {getEmbedUrl(previewNote.videoUrl) ? (
+                <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black/60 shadow-inner">
+                  <iframe
+                    src={getEmbedUrl(previewNote.videoUrl) || ''}
+                    title={previewNote.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full border-0"
+                  />
+                </div>
+              ) : (
+                <a
+                  href={previewNote.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 p-4 bg-slate-800/80 rounded-xl hover:bg-slate-800 transition-colors text-indigo-400 text-xs font-semibold"
+                >
+                  <Play className="w-4 h-4 fill-indigo-400" />
+                  <span>Click to watch lecture on external platform ({previewNote.videoUrl})</span>
+                </a>
+              )}
+            </div>
+          )}
 
           {/* Simulated Document Viewer */}
           <div>
