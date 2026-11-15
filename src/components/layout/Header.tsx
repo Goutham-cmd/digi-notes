@@ -52,6 +52,11 @@ export default function Header() {
           title: 'Academic Disciplines & Categories',
           subtitle: 'Browse notes curated by engineering and science faculties.',
         };
+      case 'chat':
+        return {
+          title: 'Campus Study Lounge & Peer Chat',
+          subtitle: 'Collaborate with fellow students, discuss course concepts, and ask exam questions in real time.',
+        };
       case 'settings':
         return {
           title: 'Account & Preferences',

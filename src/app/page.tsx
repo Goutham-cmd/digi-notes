@@ -9,10 +9,12 @@ import ExploreView from '@/components/views/ExploreView';
 import MyUploadsView from '@/components/views/MyUploadsView';
 import BookmarksView from '@/components/views/BookmarksView';
 import CategoriesView from '@/components/views/CategoriesView';
+import ChatView from '@/components/views/ChatView';
 import SettingsView from '@/components/views/SettingsView';
 import AdminPortal from '@/components/admin/AdminPortal';
 import AuthView from '@/components/auth/AuthView';
 import ThreeDBackground from '@/components/common/ThreeDBackground';
+import FloatingChatWidget from '@/components/common/FloatingChatWidget';
 import { BookOpen, Loader2 } from 'lucide-react';
 
 export default function Home() {
@@ -48,6 +50,8 @@ export default function Home() {
         return <BookmarksView />;
       case 'categories':
         return <CategoriesView />;
+      case 'chat':
+        return <ChatView />;
       case 'settings':
         return <SettingsView />;
       case 'admin':
@@ -76,6 +80,9 @@ export default function Home() {
             {renderActiveView()}
           </div>
         </main>
+
+        {/* Global Floating Quick-Access Study Lounge Launcher */}
+        <FloatingChatWidget />
 
         {/* Minimal Campus SaaS Footer */}
         <footer className="border-t border-slate-200/80 bg-white/70 py-4 px-4 sm:px-8 text-center sm:flex sm:items-center sm:justify-between text-xs text-slate-500">

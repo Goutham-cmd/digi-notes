@@ -1,7 +1,37 @@
 export type FileType = 'PDF' | 'DOCX' | 'ZIP' | 'PPTX' | 'VIDEO';
 export type NoteStatus = 'pending' | 'published' | 'rejected' | 'Published' | 'In Review' | 'Draft';
-export type NavTab = 'dashboard' | 'explore' | 'uploads' | 'bookmarks' | 'categories' | 'settings' | 'admin';
+export type NavTab = 'dashboard' | 'explore' | 'uploads' | 'bookmarks' | 'categories' | 'chat' | 'settings' | 'admin';
 export type AdminTab = 'overview' | 'moderation' | 'users' | 'resources' | 'subjects' | 'logs';
+
+export interface ChatReaction {
+  emoji: string;
+  count: number;
+  userReacted?: boolean;
+}
+
+export interface ChatMessage {
+  id: string;
+  channelId: string;
+  senderName: string;
+  senderAvatar?: string;
+  senderRole?: 'student' | 'ta' | 'admin';
+  department?: string;
+  content: string;
+  timestamp: string;
+  isCurrentUser?: boolean;
+  attachedNoteId?: string;
+  attachedNoteTitle?: string;
+  reactions?: ChatReaction[];
+}
+
+export interface ChatChannel {
+  id: string;
+  name: string;
+  topic: string;
+  iconName: string;
+  onlineCount: number;
+  unreadCount?: number;
+}
 
 export interface Uploader {
   name: string;

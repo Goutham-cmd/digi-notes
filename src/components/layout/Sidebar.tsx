@@ -14,6 +14,7 @@ import {
   X,
   ChevronRight,
   ShieldCheck,
+  MessageSquareCode,
 } from 'lucide-react';
 
 interface SidebarItem {
@@ -46,6 +47,7 @@ export default function Sidebar() {
     { id: 'explore', label: 'Explore Notes', icon: Compass, badge: notes.filter(n => n.status.toLowerCase() === 'published').length },
     { id: 'uploads', label: 'My Uploads', icon: UploadCloud, badge: myUploadsCount },
     { id: 'bookmarks', label: 'Bookmarks', icon: Bookmark, badge: bookmarksCount },
+    { id: 'chat', label: 'Study Lounge', icon: MessageSquareCode, badge: 'Live' },
     { id: 'categories', label: 'Categories', icon: LayoutGrid },
     { id: 'settings', label: 'Settings', icon: Settings },
     ...(isAdmin ? [{ id: 'admin' as NavTab, label: 'Admin Portal', icon: ShieldCheck, badge: pendingCount > 0 ? pendingCount : undefined }] : []),
