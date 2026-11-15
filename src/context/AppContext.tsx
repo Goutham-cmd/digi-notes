@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Note, NavTab, UserProfile, ToastMessage, DbSubject } from '../types';
+import { Note, NavTab, AdminTab, UserProfile, ToastMessage, DbSubject, AdminUser, AdminAuditLog } from '../types';
 import { initialUserProfile } from '../data/mockData';
 import { createClient } from '@/lib/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
@@ -11,6 +11,7 @@ interface AppContextType {
   user: User | null;
   session: Session | null;
   isLoadingAuth: boolean;
+  isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (
     email: string,
@@ -22,6 +23,8 @@ interface AppContextType {
   // Navigation & tabs
   activeTab: NavTab;
   setActiveTab: (tab: NavTab) => void;
+  adminTab: AdminTab;
+  setAdminTab: (tab: AdminTab) => void;
 
   // Notes state & CRUD
   notes: Note[];
@@ -36,7 +39,7 @@ interface AppContextType {
       courseCode: string;
       semester: string;
       fileType: Note['fileType'];
-      status: Note['status'];
+      status?: Note['status'];
     },
     rawFile: File
   ) => Promise<boolean>;
@@ -44,6 +47,21 @@ interface AppContextType {
   deleteNote: (noteId: string) => Promise<boolean>;
   downloadNote: (note: Note) => Promise<void>;
   toggleBookmark: (noteId: string) => Promise<void>;
+
+  // Admin & Moderation Operations (Phase 3)
+  adminUsers: AdminUser[];
+  adminAuditLogs: AdminAuditLog[];
+  isLoadingAdmin: boolean;
+  fetchAdminUsers: () => Promise<void>;
+  fetchAdminLogs: () => Promise<void>;
+  approveNote: (noteId: string) => Promise<boolean>;
+  rejectNote: (noteId: string, reason: string) => Promise<boolean>;
+  toggleUserSuspension: (userId: string, currentStatus: boolean) => Promise<boolean>;
+  changeUserRole: (userId: string, newRole: 'student' | 'admin') => Promise<boolean>;
+  createSubject: (name: string, description: string) => Promise<boolean>;
+  updateSubject: (id: string, name: string, description: string) => Promise<boolean>;
+  deleteSubject: (id: string) => Promise<{ success: boolean; message?: string }>;
+  logAdminAudit: (actionType: string, targetRecord: string, details?: any) => Promise<void>;
 
   // Filters & Search
   searchQuery: string;
@@ -93,10 +111,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // App & Data State
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
+  const [adminTab, setAdminTab] = useState<AdminTab>('overview');
   const [notes, setNotes] = useState<Note[]>([]);
   const [subjects, setSubjects] = useState<DbSubject[]>([]);
   const [userBookmarks, setUserBookmarks] = useState<Set<string>>(new Set());
   const [isLoadingNotes, setIsLoadingNotes] = useState(false);
+
+  // Admin Data State (Phase 3)
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [adminAuditLogs, setAdminAuditLogs] = useState<AdminAuditLog[]>([]);
+  const [isLoadingAdmin, setIsLoadingAdmin] = useState(false);
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState('');
@@ -112,9 +136,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  // -------------------------------------------------------------
+  const isAdmin = userProfile.role === 'admin';
+
   // Toast Helper
-  // -------------------------------------------------------------
   const addToast = useCallback((toast: Omit<ToastMessage, 'id'>) => {
     const id = 'toast-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
     setToasts((prev) => [...prev, { ...toast, id }]);
@@ -128,7 +152,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // -------------------------------------------------------------
-  // Supabase Auth Management (Stage 4)
+  // Supabase Auth Management (Stage 1 & Stage 4)
   // -------------------------------------------------------------
   useEffect(() => {
     let mounted = true;
@@ -190,9 +214,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           department: data.department || 'Computer Science',
           semester: data.semester || 'Semester 4',
           role: data.role || 'student',
+          isSuspended: (data as any).is_suspended ?? false,
         }));
       } else {
-        // Fallback to metadata
         setUserProfile((prev) => ({
           ...prev,
           name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Student',
@@ -260,6 +284,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     setSession(null);
     setUserBookmarks(new Set());
+    setActiveTab('dashboard');
     addToast({
       title: 'Signed Out',
       description: 'You have been safely signed out.',
@@ -268,7 +293,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   // -------------------------------------------------------------
-  // Load Subjects and Notes (Stages 2, 5, 6, 7, 8)
+  // Data Fetching: Subjects & Notes
   // -------------------------------------------------------------
   const fetchSubjects = async () => {
     try {
@@ -287,7 +312,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const fetchNotes = useCallback(async () => {
     setIsLoadingNotes(true);
     try {
-      // 1. Fetch user bookmarks if authenticated
       let currentBookmarks = new Set<string>();
       const { data: { session: curSession } } = await supabase.auth.getSession();
       const currentUserId = curSession?.user?.id;
@@ -303,8 +327,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      // 2. Fetch notes with joins
-      const { data, error } = await supabase
+      let res: any = await supabase
         .from('notes')
         .select(`
           id,
@@ -320,20 +343,46 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           created_at,
           uploader_id,
           subject_id,
+          rejection_reason,
           subjects ( id, name ),
           profiles ( id, full_name, avatar_url, department, role )
         `)
         .order('created_at', { ascending: false });
 
+      // Graceful fallback if rejection_reason column has not been added yet in Supabase
+      if (res.error && (res.error.message?.includes('rejection_reason') || res.error.code === 'PGRST204')) {
+        res = await supabase
+          .from('notes')
+          .select(`
+            id,
+            title,
+            description,
+            semester,
+            file_path,
+            file_name,
+            file_type,
+            file_size,
+            downloads_count,
+            status,
+            created_at,
+            uploader_id,
+            subject_id,
+            subjects ( id, name ),
+            profiles ( id, full_name, avatar_url, department, role )
+          `)
+          .order('created_at', { ascending: false });
+      }
+
+      const { data, error } = res;
+
       if (error) {
-        console.error('Error fetching notes:', error);
+        console.warn('Notice loading notes:', error.message);
       } else if (data) {
         const formattedNotes: Note[] = data.map((n: any) => {
           const isCurrentUser = Boolean(currentUserId && n.uploader_id === currentUserId);
           const uploaderProfile = n.profiles;
           const subjectObj = n.subjects;
 
-          // Format relative time
           const createdDate = new Date(n.created_at);
           const diffMinutes = Math.floor((Date.now() - createdDate.getTime()) / 60000);
           let timeAgo = 'Just now';
@@ -369,6 +418,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             reviewsCount: 12 + (n.downloads_count % 35),
             isBookmarked: currentBookmarks.has(n.id),
             status: n.status as Note['status'],
+            rejectionReason: n.rejection_reason || undefined,
             uploadedAt: timeAgo,
             tags: [subjectObj?.name || 'Academic', n.semester, 'Exam Blueprint'],
             isRecommended: n.downloads_count > 5,
@@ -391,7 +441,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [fetchNotes]);
 
   // -------------------------------------------------------------
-  // Stage 5: Upload, Update, Delete, Download
+  // Stage 5 & 8: Notes Upload, Update, Delete, Download
   // -------------------------------------------------------------
   const addNote = async (
     newNoteData: {
@@ -401,7 +451,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       courseCode: string;
       semester: string;
       fileType: Note['fileType'];
-      status: Note['status'];
+      status?: Note['status'];
     },
     rawFile: File
   ): Promise<boolean> => {
@@ -414,8 +464,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       return false;
     }
 
+    if (userProfile.isSuspended) {
+      addToast({
+        title: 'Account Suspended',
+        description: 'Your account is currently suspended from uploading resources.',
+        type: 'error',
+      });
+      return false;
+    }
+
     try {
-      // 1. Resolve subject_id
       let targetSubjectId = subjects.find(
         (s) => s.name.toLowerCase() === newNoteData.subjectName.toLowerCase()
       )?.id;
@@ -425,7 +483,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (!targetSubjectId) {
-        // Fallback insert subject if needed
         const { data: newSub } = await supabase
           .from('subjects')
           .insert({ name: newNoteData.subjectName, description: 'Academic Coursework' })
@@ -434,7 +491,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         targetSubjectId = newSub?.id;
       }
 
-      // 2. Upload raw file to Supabase Storage Bucket 'notes'
       const sanitizedName = rawFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
       const storageFilePath = `${user.id}/${Date.now()}-${sanitizedName}`;
 
@@ -456,10 +512,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
 
-      // 3. Format file size
       const sizeMB = (rawFile.size / (1024 * 1024)).toFixed(1) + ' MB';
 
-      // 4. Insert note metadata into 'notes' table
+      // Phase 3 Moderation: student uploads default to 'pending'
+      const initialStatus = isAdmin ? 'published' : (newNoteData.status || 'pending');
+
       const { error: dbError } = await supabase.from('notes').insert({
         title: newNoteData.title,
         description: newNoteData.description,
@@ -471,12 +528,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         file_size: sizeMB,
         uploader_id: user.id,
         downloads_count: 0,
-        status: newNoteData.status || 'Published',
+        status: initialStatus,
       });
 
       if (dbError) {
         console.error('Database insert error:', dbError);
-        // Rollback storage file on DB error
         await supabase.storage.from('notes').remove([storageFilePath]);
         addToast({
           title: 'Database Error',
@@ -487,8 +543,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
 
       addToast({
-        title: 'Note Published Successfully',
-        description: `"${newNoteData.title}" is now available in peer search.`,
+        title: isAdmin ? 'Note Published Live' : 'Note Submitted for Moderation',
+        description: isAdmin
+          ? `"${newNoteData.title}" is published.`
+          : `"${newNoteData.title}" is in queue. It will appear on Explore once approved by an admin.`,
         type: 'success',
       });
 
@@ -510,7 +568,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!user) return false;
 
     try {
-      // Find subject_id if subject name changed
       let subjectId = updatedNote.subjectId;
       if (!subjectId && updatedNote.subject) {
         subjectId = subjects.find((s) => s.name === updatedNote.subject)?.id;
@@ -561,12 +618,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     try {
       const targetNote = notes.find((n) => n.id === noteId);
 
-      // 1. Delete from storage if file path exists
       if (targetNote?.filePath) {
         await supabase.storage.from('notes').remove([targetNote.filePath]);
       }
 
-      // 2. Delete database row
       const { error } = await supabase.from('notes').delete().eq('id', noteId);
 
       if (error) {
@@ -578,9 +633,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         return false;
       }
 
+      if (isAdmin) {
+        await logAdminAudit('NOTE_DELETED', targetNote?.title || noteId, {
+          uploader_id: targetNote?.uploaderId,
+          subject: targetNote?.subject,
+        });
+      }
+
       addToast({
         title: 'Note Deleted',
-        description: 'Resource has been removed from NoteNest.',
+        description: 'Resource has been removed.',
         type: 'warning',
       });
 
@@ -597,6 +659,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const downloadNote = async (note: Note) => {
+    // Stage 8: Prevent downloading unpublished notes (unless uploader or admin)
+    const isOwner = user && note.uploaderId === user.id;
+    const isApproved = note.status === 'published' || note.status === 'Published';
+
+    if (!isApproved && !isOwner && !isAdmin) {
+      addToast({
+        title: 'Note Under Review',
+        description: 'This resource is pending administrative approval and cannot be downloaded yet.',
+        type: 'warning',
+      });
+      return;
+    }
+
     try {
       addToast({
         title: 'Preparing Download',
@@ -604,7 +679,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         type: 'info',
       });
 
-      // 1. Get download URL from Supabase Storage
       let downloadUrl: string | null = null;
 
       if (note.filePath) {
@@ -614,7 +688,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         downloadUrl = data.publicUrl;
       }
 
-      // 2. Trigger secure browser download
       if (downloadUrl) {
         const link = document.createElement('a');
         link.href = downloadUrl;
@@ -625,10 +698,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         document.body.removeChild(link);
       }
 
-      // 3. Atomically increment download count in Supabase via RPC
       await supabase.rpc('increment_downloads', { note_id_input: note.id });
 
-      // 4. Update local state
       setNotes((prev) =>
         prev.map((n) => (n.id === note.id ? { ...n, downloadsCount: n.downloadsCount + 1 } : n))
       );
@@ -657,7 +728,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const isCurrentlyBookmarked = userBookmarks.has(noteId);
 
-    // Optimistic UI update
     setUserBookmarks((prev) => {
       const next = new Set(prev);
       if (isCurrentlyBookmarked) next.delete(noteId);
@@ -699,7 +769,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (err: any) {
       console.error('Bookmark error:', err);
-      // Revert optimistic update on error
       setUserBookmarks((prev) => {
         const next = new Set(prev);
         if (isCurrentlyBookmarked) next.add(noteId);
@@ -709,11 +778,326 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setNotes((prev) =>
         prev.map((n) => (n.id === noteId ? { ...n, isBookmarked: isCurrentlyBookmarked } : n))
       );
+    }
+  };
+
+  // -------------------------------------------------------------
+  // Phase 3: Admin & Moderation Operations
+  // -------------------------------------------------------------
+  const logAdminAudit = async (actionType: string, targetRecord: string, details: any = {}) => {
+    if (!user || !isAdmin) return;
+    try {
+      await supabase.from('admin_audit_logs').insert({
+        admin_id: user.id,
+        admin_email: user.email,
+        action_type: actionType,
+        target_record: targetRecord,
+        details,
+      });
+    } catch (e) {
+      console.error('Audit log failed:', e);
+    }
+  };
+
+  const approveNote = async (noteId: string): Promise<boolean> => {
+    if (!isAdmin) return false;
+    try {
+      const targetNote = notes.find((n) => n.id === noteId);
+      const { error } = await supabase
+        .from('notes')
+        .update({ status: 'published', rejection_reason: null })
+        .eq('id', noteId);
+
+      if (error) throw error;
+
+      await logAdminAudit('NOTE_APPROVED', targetNote?.title || noteId, {
+        note_id: noteId,
+        uploader_id: targetNote?.uploaderId,
+      });
+
       addToast({
-        title: 'Bookmark Failed',
-        description: 'Could not sync bookmark with database.',
+        title: 'Note Approved',
+        description: `"${targetNote?.title || 'Note'}" is now live and published on Explore.`,
+        type: 'success',
+      });
+
+      await fetchNotes();
+      return true;
+    } catch (err: any) {
+      addToast({
+        title: 'Approval Failed',
+        description: err.message || 'Could not approve note.',
         type: 'error',
       });
+      return false;
+    }
+  };
+
+  const rejectNote = async (noteId: string, reason: string): Promise<boolean> => {
+    if (!isAdmin) return false;
+    try {
+      const targetNote = notes.find((n) => n.id === noteId);
+      const { error } = await supabase
+        .from('notes')
+        .update({ status: 'rejected', rejection_reason: reason })
+        .eq('id', noteId);
+
+      if (error) throw error;
+
+      await logAdminAudit('NOTE_REJECTED', targetNote?.title || noteId, {
+        note_id: noteId,
+        uploader_id: targetNote?.uploaderId,
+        reason,
+      });
+
+      addToast({
+        title: 'Note Rejected',
+        description: `Feedback has been sent to the uploader.`,
+        type: 'warning',
+      });
+
+      await fetchNotes();
+      return true;
+    } catch (err: any) {
+      addToast({
+        title: 'Rejection Failed',
+        description: err.message || 'Could not reject note.',
+        type: 'error',
+      });
+      return false;
+    }
+  };
+
+  const fetchAdminUsers = async () => {
+    if (!isAdmin) return;
+    setIsLoadingAdmin(true);
+    try {
+      const { data: profilesData, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (profilesData && !error) {
+        // Calculate user uploads count
+        const userUploadsMap: Record<string, number> = {};
+        notes.forEach((n) => {
+          if (n.uploaderId) {
+            userUploadsMap[n.uploaderId] = (userUploadsMap[n.uploaderId] || 0) + 1;
+          }
+        });
+
+        const formattedUsers: AdminUser[] = profilesData.map((p: any) => ({
+          id: p.id,
+          full_name: p.full_name,
+          email: p.email,
+          avatar_url: p.avatar_url,
+          role: p.role || 'student',
+          is_suspended: p.is_suspended ?? false,
+          university: p.university,
+          department: p.department,
+          semester: p.semester,
+          created_at: p.created_at,
+          uploadsCount: userUploadsMap[p.id] || 0,
+        }));
+
+        setAdminUsers(formattedUsers);
+      }
+    } catch (e) {
+      console.error('Failed to fetch admin users:', e);
+    } finally {
+      setIsLoadingAdmin(false);
+    }
+  };
+
+  const toggleUserSuspension = async (userId: string, currentStatus: boolean): Promise<boolean> => {
+    if (!isAdmin) return false;
+    try {
+      const targetUser = adminUsers.find((u) => u.id === userId);
+      const nextStatus = !currentStatus;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ is_suspended: nextStatus })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      await logAdminAudit(
+        nextStatus ? 'USER_SUSPENDED' : 'USER_REACTIVATED',
+        targetUser?.email || userId,
+        { previous_status: currentStatus, new_status: nextStatus }
+      );
+
+      addToast({
+        title: nextStatus ? 'User Suspended' : 'User Reactivated',
+        description: `${targetUser?.full_name || 'User'} has been ${nextStatus ? 'suspended' : 'restored'}.`,
+        type: nextStatus ? 'warning' : 'success',
+      });
+
+      await fetchAdminUsers();
+      return true;
+    } catch (err: any) {
+      addToast({
+        title: 'Action Failed',
+        description: err.message || 'Could not update user status.',
+        type: 'error',
+      });
+      return false;
+    }
+  };
+
+  const changeUserRole = async (userId: string, newRole: 'student' | 'admin'): Promise<boolean> => {
+    if (!isAdmin) return false;
+    try {
+      const targetUser = adminUsers.find((u) => u.id === userId);
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ role: newRole })
+        .eq('id', userId);
+
+      if (error) throw error;
+
+      await logAdminAudit('ROLE_CHANGED', targetUser?.email || userId, {
+        target_user: targetUser?.email,
+        assigned_role: newRole,
+      });
+
+      addToast({
+        title: 'Role Updated',
+        description: `${targetUser?.full_name || 'User'} is now a ${newRole}.`,
+        type: 'success',
+      });
+
+      await fetchAdminUsers();
+      return true;
+    } catch (err: any) {
+      addToast({
+        title: 'Role Update Failed',
+        description: err.message || 'Could not change user role.',
+        type: 'error',
+      });
+      return false;
+    }
+  };
+
+  const createSubject = async (name: string, description: string): Promise<boolean> => {
+    if (!isAdmin) return false;
+    try {
+      const { data, error } = await supabase
+        .from('subjects')
+        .insert({ name, description })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      await logAdminAudit('SUBJECT_CREATED', name, { subject_id: data.id, description });
+
+      addToast({
+        title: 'Subject Added',
+        description: `"${name}" added to curriculum options.`,
+        type: 'success',
+      });
+
+      await fetchSubjects();
+      return true;
+    } catch (err: any) {
+      addToast({
+        title: 'Failed to Add Subject',
+        description: err.message || 'Could not create subject.',
+        type: 'error',
+      });
+      return false;
+    }
+  };
+
+  const updateSubject = async (id: string, name: string, description: string): Promise<boolean> => {
+    if (!isAdmin) return false;
+    try {
+      const { error } = await supabase
+        .from('subjects')
+        .update({ name, description })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      await logAdminAudit('SUBJECT_UPDATED', name, { subject_id: id, description });
+
+      addToast({
+        title: 'Subject Updated',
+        description: `Changes saved for "${name}".`,
+        type: 'success',
+      });
+
+      await fetchSubjects();
+      await fetchNotes();
+      return true;
+    } catch (err: any) {
+      addToast({
+        title: 'Update Failed',
+        description: err.message || 'Could not update subject.',
+        type: 'error',
+      });
+      return false;
+    }
+  };
+
+  const deleteSubject = async (id: string): Promise<{ success: boolean; message?: string }> => {
+    if (!isAdmin) return { success: false, message: 'Unauthorized' };
+
+    // Stage 6 Rule: Prevent deleting subjects that still have associated notes
+    const activeNotesInSubject = notes.filter((n) => n.subjectId === id);
+    if (activeNotesInSubject.length > 0) {
+      const msg = `Cannot delete: There are ${activeNotesInSubject.length} active notes under this subject. Please reassign or delete those notes first.`;
+      addToast({
+        title: 'Cannot Delete Subject',
+        description: msg,
+        type: 'warning',
+      });
+      return { success: false, message: msg };
+    }
+
+    try {
+      const target = subjects.find((s) => s.id === id);
+      const { error } = await supabase.from('subjects').delete().eq('id', id);
+
+      if (error) throw error;
+
+      await logAdminAudit('SUBJECT_DELETED', target?.name || id, { subject_id: id });
+
+      addToast({
+        title: 'Subject Deleted',
+        description: `Removed "${target?.name || 'Subject'}" from catalog.`,
+        type: 'warning',
+      });
+
+      await fetchSubjects();
+      return { success: true };
+    } catch (err: any) {
+      addToast({
+        title: 'Delete Failed',
+        description: err.message || 'Could not delete subject.',
+        type: 'error',
+      });
+      return { success: false, message: err.message };
+    }
+  };
+
+  const fetchAdminLogs = async () => {
+    if (!isAdmin) return;
+    try {
+      const { data, error } = await supabase
+        .from('admin_audit_logs')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
+
+      if (data && !error) {
+        setAdminAuditLogs(data);
+      }
+    } catch (e) {
+      console.error('Failed to fetch audit logs:', e);
     }
   };
 
@@ -773,11 +1157,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         user,
         session,
         isLoadingAuth,
+        isAdmin,
         signIn,
         signUp,
         signOut,
         activeTab,
         setActiveTab,
+        adminTab,
+        setAdminTab,
         notes,
         subjects,
         isLoadingNotes,
@@ -787,6 +1174,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         deleteNote,
         downloadNote,
         toggleBookmark,
+        adminUsers,
+        adminAuditLogs,
+        isLoadingAdmin,
+        fetchAdminUsers,
+        fetchAdminLogs,
+        approveNote,
+        rejectNote,
+        toggleUserSuspension,
+        changeUserRole,
+        createSubject,
+        updateSubject,
+        deleteSubject,
+        logAdminAudit,
         searchQuery,
         setSearchQuery,
         selectedSubject,

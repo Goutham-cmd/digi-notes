@@ -29,6 +29,7 @@ export default function Sidebar() {
     setActiveTab,
     notes,
     userProfile,
+    isAdmin,
     isMobileSidebarOpen,
     setIsMobileSidebarOpen,
     openUploadModal,
@@ -36,14 +37,18 @@ export default function Sidebar() {
 
   const myUploadsCount = notes.filter((n) => n.uploader.isCurrentUser).length;
   const bookmarksCount = notes.filter((n) => n.isBookmarked).length;
+  const pendingCount = notes.filter(
+    (n) => n.status.toLowerCase() === 'pending' || n.status.toLowerCase() === 'in review'
+  ).length;
 
   const navItems: SidebarItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: BookOpen },
-    { id: 'explore', label: 'Explore Notes', icon: Compass, badge: notes.length },
+    { id: 'explore', label: 'Explore Notes', icon: Compass, badge: notes.filter(n => n.status.toLowerCase() === 'published').length },
     { id: 'uploads', label: 'My Uploads', icon: UploadCloud, badge: myUploadsCount },
     { id: 'bookmarks', label: 'Bookmarks', icon: Bookmark, badge: bookmarksCount },
     { id: 'categories', label: 'Categories', icon: LayoutGrid },
     { id: 'settings', label: 'Settings', icon: Settings },
+    ...(isAdmin ? [{ id: 'admin' as NavTab, label: 'Admin Portal', icon: ShieldCheck, badge: pendingCount > 0 ? pendingCount : undefined }] : []),
   ];
 
   const handleNavClick = (tabId: NavTab) => {
@@ -188,7 +193,13 @@ export default function Sidebar() {
                 <span className="text-xs font-semibold text-slate-900 truncate">
                   {userProfile.name}
                 </span>
-                <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                {isAdmin ? (
+                  <span className="text-[9px] font-extrabold bg-purple-100 text-purple-800 px-1.5 py-0.2 rounded border border-purple-200">
+                    ADMIN
+                  </span>
+                ) : (
+                  <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                )}
               </div>
               <p className="text-[11px] text-slate-500 truncate">{userProfile.department}</p>
             </div>

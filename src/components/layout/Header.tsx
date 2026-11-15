@@ -57,6 +57,11 @@ export default function Header() {
           title: 'Account & Preferences',
           subtitle: 'Manage your profile, university details, and notifications.',
         };
+      case 'admin':
+        return {
+          title: 'Campus Administration Portal',
+          subtitle: 'Content moderation, user oversight, curriculum governance, and platform audit logs.',
+        };
       default:
         return {
           title: 'NoteNest Dashboard',

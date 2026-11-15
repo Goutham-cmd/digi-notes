@@ -10,6 +10,7 @@ import MyUploadsView from '@/components/views/MyUploadsView';
 import BookmarksView from '@/components/views/BookmarksView';
 import CategoriesView from '@/components/views/CategoriesView';
 import SettingsView from '@/components/views/SettingsView';
+import AdminPortal from '@/components/admin/AdminPortal';
 import AuthView from '@/components/auth/AuthView';
 import { BookOpen, Loader2 } from 'lucide-react';
 
@@ -48,6 +49,8 @@ export default function Home() {
         return <CategoriesView />;
       case 'settings':
         return <SettingsView />;
+      case 'admin':
+        return <AdminPortal />;
       default:
         return <DashboardView />;
     }

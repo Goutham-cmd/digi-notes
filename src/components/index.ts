@@ -13,3 +13,6 @@ export { default as MyUploadsView } from './views/MyUploadsView';
 export { default as BookmarksView } from './views/BookmarksView';
 export { default as CategoriesView } from './views/CategoriesView';
 export { default as SettingsView } from './views/SettingsView';
+export { default as AdminPortal } from './admin/AdminPortal';
+export { default as AuthView } from './auth/AuthView';
+export { default as Interactive3DModel } from './dashboard/Interactive3DModel';

@@ -92,6 +92,25 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
             <span className="text-[11px] font-mono font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">
               {note.courseCode}
             </span>
+
+            {/* Moderation Status Pill */}
+            {note.status && (
+              <span
+                className={`text-[10px] font-semibold px-2 py-0.5 rounded-md ${
+                  (note.status || '').toLowerCase() === 'published'
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
+                    : (note.status || '').toLowerCase() === 'rejected'
+                    ? 'bg-rose-50 text-rose-700 border border-rose-200/60'
+                    : 'bg-amber-50 text-amber-700 border border-amber-200/60'
+                }`}
+              >
+                {(note.status || '').toLowerCase() === 'published'
+                  ? 'Published'
+                  : (note.status || '').toLowerCase() === 'rejected'
+                  ? 'Rejected'
+                  : 'In Review'}
+              </span>
+            )}
           </div>
 
           {/* Bookmark Button */}
@@ -142,6 +161,13 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
             </span>
           )}
         </div>
+
+        {/* Rejection feedback */}
+        {note.status.toLowerCase() === 'rejected' && note.rejectionReason && (
+          <div className="mt-2.5 p-2 bg-rose-50 border border-rose-200 rounded-lg text-[11px] text-rose-700">
+            <span className="font-semibold">Moderator Note:</span> {note.rejectionReason}
+          </div>
+        )}
       </div>
 
       {/* Bottom Footer Section */}

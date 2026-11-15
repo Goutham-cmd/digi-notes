@@ -166,9 +166,8 @@ export default function UploadModal() {
               placeholder="e.g. Operating Systems: Virtual Memory & Page Replacement Cheat Sheet"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className={`w-full px-3.5 py-2 text-sm bg-white border rounded-xl placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
-                errors.title ? 'border-rose-300 focus:border-rose-500' : 'border-slate-200 focus:border-indigo-500'
-              }`}
+              className={`w-full px-3.5 py-2 text-sm bg-white border rounded-xl placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${errors.title ? 'border-rose-300 focus:border-rose-500' : 'border-slate-200 focus:border-indigo-500'
+                }`}
             />
             {errors.title && (
               <p className="text-xs text-rose-500 mt-1 flex items-center gap-1">
@@ -190,17 +189,17 @@ export default function UploadModal() {
               >
                 {subjects.length > 0
                   ? subjects.map((s) => (
-                      <option key={s.id} value={s.name}>
-                        {s.name}
-                      </option>
-                    ))
+                    <option key={s.id} value={s.name}>
+                      {s.name}
+                    </option>
+                  ))
                   : subjectOptions
-                      .filter((s) => s !== 'All Subjects')
-                      .map((s) => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
-                      ))}
+                    .filter((s) => s !== 'All Subjects')
+                    .map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
               </select>
             </div>
 
@@ -233,9 +232,8 @@ export default function UploadModal() {
                 placeholder="e.g. CS301"
                 value={courseCode}
                 onChange={(e) => setCourseCode(e.target.value)}
-                className={`w-full px-3 py-2 text-sm uppercase bg-white border rounded-xl placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
-                  errors.courseCode ? 'border-rose-300 focus:border-rose-500' : 'border-slate-200 focus:border-indigo-500'
-                }`}
+                className={`w-full px-3 py-2 text-sm uppercase bg-white border rounded-xl placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${errors.courseCode ? 'border-rose-300 focus:border-rose-500' : 'border-slate-200 focus:border-indigo-500'
+                  }`}
               />
               {errors.courseCode && (
                 <p className="text-xs text-rose-500 mt-1 flex items-center gap-1">
@@ -268,9 +266,8 @@ export default function UploadModal() {
               placeholder="Provide a concise description of what topics, proofs, and formulas this study material includes..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className={`w-full px-3.5 py-2 text-sm bg-white border rounded-xl placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${
-                errors.description ? 'border-rose-300 focus:border-rose-500' : 'border-slate-200 focus:border-indigo-500'
-              }`}
+              className={`w-full px-3.5 py-2 text-sm bg-white border rounded-xl placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 ${errors.description ? 'border-rose-300 focus:border-rose-500' : 'border-slate-200 focus:border-indigo-500'
+                }`}
             />
             {errors.description && (
               <p className="text-xs text-rose-500 mt-1 flex items-center gap-1">
@@ -298,9 +295,8 @@ export default function UploadModal() {
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={handleFileDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors bg-slate-50/50 hover:bg-slate-50 ${
-                  errors.file ? 'border-rose-300 bg-rose-50/20' : 'border-slate-200 hover:border-indigo-300'
-                }`}
+                className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors bg-slate-50/50 hover:bg-slate-50 ${errors.file ? 'border-rose-300 bg-rose-50/20' : 'border-slate-200 hover:border-indigo-300'
+                  }`}
               >
                 <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto mb-2 border border-indigo-100">
                   <UploadCloud className="w-5 h-5" />

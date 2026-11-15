@@ -38,31 +38,42 @@ export default function MyUploadsView() {
     return true;
   });
 
-  const publishedCount = myUploads.filter((n) => n.status === 'Published').length;
-  const inReviewCount = myUploads.filter((n) => n.status === 'In Review').length;
-  const draftCount = myUploads.filter((n) => n.status === 'Draft').length;
+  const publishedCount = myUploads.filter((n) => (n.status || '').toLowerCase() === 'published').length;
+  const inReviewCount = myUploads.filter((n) => {
+    const s = (n.status || '').toLowerCase();
+    return s === 'pending' || s === 'in review';
+  }).length;
+  const rejectedCount = myUploads.filter((n) => (n.status || '').toLowerCase() === 'rejected').length;
   const totalUploadDownloads = myUploads.reduce((acc, curr) => acc + curr.downloadsCount, 0);
 
-  const getStatusBadge = (status: NoteStatus) => {
-    switch (status) {
-      case 'Published':
+  const getStatusBadge = (status?: NoteStatus) => {
+    const s = (status || '').toLowerCase();
+    switch (s) {
+      case 'published':
         return (
           <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 rounded-full">
-            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
-            Published
+            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+            Approved
           </span>
         );
-      case 'In Review':
+      case 'pending':
+      case 'in review':
         return (
           <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded-full">
             <Clock className="w-3 h-3 text-amber-600" />
-            In Review
+            Pending Review
           </span>
         );
-      case 'Draft':
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700 bg-rose-50 border border-rose-200/80 px-2.5 py-0.5 rounded-full">
+            <AlertCircle className="w-3 h-3 text-rose-600" />
+            Rejected
+          </span>
+        );
+      default:
         return (
           <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 bg-slate-100 border border-slate-200 px-2.5 py-0.5 rounded-full">
-            <span className="w-1.5 h-1.5 bg-slate-400 rounded-full" />
             Draft
           </span>
         );
@@ -186,6 +197,11 @@ export default function MyUploadsView() {
                             <p className="text-[11px] text-slate-400">
                               {note.fileName} • {note.fileSize}
                             </p>
+                            {note.rejectionReason && (
+                              <p className="text-[10px] text-rose-700 bg-rose-50 px-2 py-0.5 rounded mt-1 border border-rose-200">
+                                <span className="font-semibold">Moderator Note:</span> {note.rejectionReason}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </td>

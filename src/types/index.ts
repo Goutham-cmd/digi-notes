@@ -1,6 +1,7 @@
 export type FileType = 'PDF' | 'DOCX' | 'ZIP' | 'PPTX';
-export type NoteStatus = 'Published' | 'In Review' | 'Draft';
-export type NavTab = 'dashboard' | 'explore' | 'uploads' | 'bookmarks' | 'categories' | 'settings';
+export type NoteStatus = 'pending' | 'published' | 'rejected' | 'Published' | 'In Review' | 'Draft';
+export type NavTab = 'dashboard' | 'explore' | 'uploads' | 'bookmarks' | 'categories' | 'settings' | 'admin';
+export type AdminTab = 'overview' | 'moderation' | 'users' | 'resources' | 'subjects' | 'logs';
 
 export interface Uploader {
   name: string;
@@ -29,6 +30,7 @@ export interface Note {
   reviewsCount: number;
   isBookmarked: boolean;
   status: NoteStatus;
+  rejectionReason?: string;
   uploadedAt: string;
   tags: string[];
   isRecommended?: boolean;
@@ -39,6 +41,32 @@ export interface DbSubject {
   id: string;
   name: string;
   description: string | null;
+  created_at?: string;
+  notesCount?: number;
+}
+
+export interface AdminAuditLog {
+  id: string;
+  admin_id: string | null;
+  admin_email: string | null;
+  action_type: string;
+  target_record: string | null;
+  details: any;
+  created_at: string;
+}
+
+export interface AdminUser {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  avatar_url: string | null;
+  role: 'student' | 'admin';
+  is_suspended: boolean;
+  university: string | null;
+  department: string | null;
+  semester: string | null;
+  created_at: string;
+  uploadsCount?: number;
 }
 
 export interface Category {
@@ -76,6 +104,7 @@ export interface UserProfile {
   bio: string;
   reputationPoints: number;
   role: string;
+  isSuspended?: boolean;
   emailNotifications: boolean;
   newNoteAlerts: boolean;
   weeklyDigest: boolean;

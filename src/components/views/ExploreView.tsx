@@ -30,6 +30,10 @@ export default function ExploreView() {
   const filteredNotes = useMemo(() => {
     return notes
       .filter((note) => {
+        // Stage 4: Only approved and published notes appear on public Explore Notes
+        const isPublished = (note.status || '').toLowerCase() === 'published';
+        if (!isPublished) return false;
+
         // Search filter (title, description, tags, course code, uploader)
         if (searchQuery.trim()) {
           const query = searchQuery.toLowerCase().trim();
