@@ -93,9 +93,20 @@ export default function Header() {
           </button>
 
           <div className="min-w-0">
-            <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight truncate">
-              {title}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight truncate">
+                {title}
+              </h1>
+              <span
+                className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                  userProfile.role === 'admin'
+                    ? 'bg-purple-50 text-purple-700 border-purple-200'
+                    : 'bg-blue-50 text-blue-700 border-blue-200'
+                }`}
+              >
+                {userProfile.role === 'admin' ? 'ADMIN' : 'STUDENT'}
+              </span>
+            </div>
             <p className="hidden sm:block text-xs text-slate-500 truncate">{subtitle}</p>
           </div>
         </div>
