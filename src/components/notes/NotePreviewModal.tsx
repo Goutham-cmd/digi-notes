@@ -18,11 +18,12 @@ import {
   Play,
   ExternalLink,
   GraduationCap,
+  MessageSquare,
 } from 'lucide-react';
 import { getEmbedUrl } from '@/lib/videoUtils';
 
 export default function NotePreviewModal() {
-  const { previewNote, closePreviewModal, toggleBookmark, downloadNote, addToast } = useApp();
+  const { previewNote, closePreviewModal, toggleBookmark, downloadNote, addToast, setActiveTab } = useApp();
 
   if (!previewNote) return null;
 
@@ -273,10 +274,23 @@ export default function NotePreviewModal() {
             {previewNote.fileSize})
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <button
+              onClick={() => {
+                closePreviewModal();
+                setActiveTab('chat');
+              }}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl border border-indigo-200/80 transition-colors"
+              title="Discuss this note in Student Messages"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Discuss in Messages</span>
+              <span className="sm:hidden">Discuss</span>
+            </button>
+
             <button
               onClick={closePreviewModal}
-              className="px-4 py-2 text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-xl transition-colors"
+              className="px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-xl transition-colors"
             >
               Close
             </button>
@@ -284,7 +298,7 @@ export default function NotePreviewModal() {
               onClick={() => {
                 downloadNote(previewNote);
               }}
-              className="flex items-center gap-2 px-5 py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm shadow-indigo-200 transition-all active:scale-[0.98]"
+              className="flex items-center gap-2 px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm shadow-indigo-200 transition-all active:scale-[0.98]"
             >
               <Download className="w-4 h-4" />
               <span>Download File</span>

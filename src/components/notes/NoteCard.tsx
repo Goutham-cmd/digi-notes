@@ -19,6 +19,7 @@ import {
   Play,
   Video,
   GraduationCap,
+  MessageSquare,
 } from 'lucide-react';
 
 interface NoteCardProps {
@@ -33,6 +34,7 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
     openPreviewModal,
     openEditModal,
     deleteNote,
+    setActiveTab,
   } = useApp();
 
   const getFileTypeBadge = (type: Note['fileType']) => {
@@ -272,6 +274,18 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
             >
               <Eye className="w-3.5 h-3.5" />
               <span>Preview</span>
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setActiveTab('chat');
+              }}
+              className="btn-3d inline-flex items-center p-1.5 text-xs text-slate-500 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+              title="Discuss in Messages"
+              aria-label="Discuss in Messages"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
             </button>
 
             <button

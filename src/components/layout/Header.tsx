@@ -11,6 +11,7 @@ import {
   Filter,
   Sparkles,
   LogOut,
+  MessageSquare,
 } from 'lucide-react';
 
 export default function Header() {
@@ -137,6 +138,23 @@ export default function Header() {
               className="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
             />
           </form>
+
+          {/* Quick Messages Button */}
+          <div className="relative">
+            <button
+              onClick={() => setActiveTab('chat')}
+              className={`p-2 rounded-xl transition-colors cursor-pointer ${
+                activeTab === 'chat'
+                  ? 'bg-indigo-50 text-indigo-600'
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+              }`}
+              title="Student Messages & Chat"
+              aria-label="Student Messages and Chat"
+            >
+              <MessageSquare className="w-4 h-4" />
+            </button>
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+          </div>
 
           {/* Quick Notification icon */}
           <div className="relative">
