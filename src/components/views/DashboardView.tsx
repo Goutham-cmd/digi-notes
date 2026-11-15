@@ -5,6 +5,7 @@ import { useApp } from '@/context/AppContext';
 import StatsCard from '@/components/common/StatsCard';
 import NoteCard from '@/components/notes/NoteCard';
 import Interactive3DModel from '@/components/dashboard/Interactive3DModel';
+import Galaxy from '@/components/common/Galaxy';
 import { popularSubjects, mockActivities } from '@/data/mockData';
 import {
   FileText,
@@ -56,9 +57,21 @@ export default function DashboardView() {
     <div className="space-y-8 animate-in fade-in duration-300">
       {/* Top Banner / Hero Card with 3D Interactive Model */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 shadow-md border border-indigo-500/20">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+        {/* React Bits Interactive Galaxy Starfield Background */}
+        <div className="absolute inset-0 pointer-events-auto opacity-75">
+          <Galaxy
+            density={1}
+            glowIntensity={0.3}
+            flareIntensity={1}
+            starSpeed={0.5}
+            mouseRepulsion
+            clickWarp
+          />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10 pointer-events-none">
           {/* Left Column: Hero Copy & CTA */}
-          <div className="lg:col-span-7 space-y-4">
+          <div className="lg:col-span-7 space-y-4 pointer-events-auto">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-medium">
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
               <span>Semester Midterm & Final Exam Archives Live</span>
@@ -110,7 +123,7 @@ export default function DashboardView() {
           </div>
 
           {/* Right Column: 3D Interactive Model */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-end">
+          <div className="lg:col-span-5 flex justify-center lg:justify-end pointer-events-auto">
             <Interactive3DModel
               coveragePercentage={verificationRate}
               totalNotes={notes.length}

@@ -16,6 +16,7 @@ import {
   AlertCircle,
   CheckCircle2,
 } from 'lucide-react';
+import Galaxy from '@/components/common/Galaxy';
 
 export default function AuthView() {
   const { signIn, signUp, loginAsTestUser } = useApp();
@@ -73,25 +74,37 @@ export default function AuthView() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-indigo-500 selection:text-white">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 selection:bg-indigo-500 selection:text-white relative overflow-hidden">
+      {/* React Bits Interactive Galaxy Ambient Background */}
+      <div className="absolute inset-0 pointer-events-auto opacity-40">
+        <Galaxy
+          density={0.8}
+          glowIntensity={0.25}
+          flareIntensity={0.8}
+          starSpeed={0.4}
+          mouseRepulsion
+          clickWarp
+        />
+      </div>
+
+      <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10 pointer-events-none">
         {/* Brand Logo */}
-        <div className="flex justify-center items-center gap-2.5 mb-3">
+        <div className="flex justify-center items-center gap-2.5 mb-3 pointer-events-auto">
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-200">
             <BookOpen className="w-6 h-6" />
           </div>
           <span className="font-extrabold text-2xl text-slate-900 tracking-tight">NoteNest</span>
         </div>
 
-        <h2 className="text-center text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+        <h2 className="text-center text-xl sm:text-2xl font-bold tracking-tight text-slate-900 pointer-events-auto">
           {mode === 'signin' ? 'Sign in to NoteNest' : 'Create your student account'}
         </h2>
-        <p className="mt-1 text-center text-xs text-slate-500">
+        <p className="mt-1 text-center text-xs text-slate-500 pointer-events-auto">
           Digital Notes & Resource Sharing Platform for Academic Excellence
         </p>
       </div>
 
-      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
+      <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0 relative z-10">
         <div className="bg-white py-8 px-6 sm:px-8 shadow-sm border border-slate-200 rounded-2xl">
           {/* 1-Click Instant Test / Demo Access */}
           <div className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-indigo-50/90 via-purple-50/70 to-indigo-50/90 border border-indigo-200/80 shadow-xs">
