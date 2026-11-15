@@ -14,12 +14,15 @@ export interface Note {
   title: string;
   description: string;
   subject: string;
+  subjectId?: string;
   courseCode: string;
   semester: string;
   uploader: Uploader;
+  uploaderId?: string;
   fileType: FileType;
   fileName: string;
   fileSize: string;
+  filePath?: string;
   pageCount?: number;
   downloadsCount: number;
   rating: number;
@@ -30,6 +33,12 @@ export interface Note {
   tags: string[];
   isRecommended?: boolean;
   verified?: boolean;
+}
+
+export interface DbSubject {
+  id: string;
+  name: string;
+  description: string | null;
 }
 
 export interface Category {

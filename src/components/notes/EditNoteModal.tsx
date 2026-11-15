@@ -6,7 +6,7 @@ import { subjectOptions, semesterOptions } from '@/data/mockData';
 import { X, Edit3, Save } from 'lucide-react';
 
 export default function EditNoteModal() {
-  const { editingNote, closeEditModal, updateNote } = useApp();
+  const { editingNote, closeEditModal, updateNote, subjects } = useApp();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -87,11 +87,19 @@ export default function EditNoteModal() {
                 onChange={(e) => setSubject(e.target.value)}
                 className="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               >
-                {subjectOptions.filter((s) => s !== 'All Subjects').map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
+                {subjects.length > 0
+                  ? subjects.map((s) => (
+                      <option key={s.id} value={s.name}>
+                        {s.name}
+                      </option>
+                    ))
+                  : subjectOptions
+                      .filter((s) => s !== 'All Subjects')
+                      .map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
               </select>
             </div>
 

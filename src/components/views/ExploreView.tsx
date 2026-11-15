@@ -16,6 +16,7 @@ import {
 export default function ExploreView() {
   const {
     notes,
+    subjects,
     searchQuery,
     setSearchQuery,
     selectedSubject,
@@ -137,11 +138,20 @@ export default function ExploreView() {
               onChange={(e) => setSelectedSubject(e.target.value)}
               className="text-xs font-medium bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
             >
-              {subjectOptions.map((sub) => (
-                <option key={sub} value={sub}>
-                  {sub}
-                </option>
-              ))}
+              <option value="All Subjects">All Subjects</option>
+              {subjects.length > 0
+                ? subjects.map((sub) => (
+                    <option key={sub.id} value={sub.name}>
+                      {sub.name}
+                    </option>
+                  ))
+                : subjectOptions
+                    .filter((s) => s !== 'All Subjects')
+                    .map((sub) => (
+                      <option key={sub} value={sub}>
+                        {sub}
+                      </option>
+                    ))}
             </select>
 
             {/* Semester Selector */}

@@ -10,9 +10,29 @@ import MyUploadsView from '@/components/views/MyUploadsView';
 import BookmarksView from '@/components/views/BookmarksView';
 import CategoriesView from '@/components/views/CategoriesView';
 import SettingsView from '@/components/views/SettingsView';
+import AuthView from '@/components/auth/AuthView';
+import { BookOpen, Loader2 } from 'lucide-react';
 
 export default function Home() {
-  const { activeTab } = useApp();
+  const { activeTab, session, isLoadingAuth } = useApp();
+
+  if (isLoadingAuth) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-200 mb-4 animate-pulse">
+          <BookOpen className="w-6 h-6" />
+        </div>
+        <div className="flex items-center gap-2 text-slate-600 text-sm font-medium">
+          <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+          <span>Connecting to NoteNest...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return <AuthView />;
+  }
 
   const renderActiveView = () => {
     switch (activeTab) {

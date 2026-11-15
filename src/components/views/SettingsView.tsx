@@ -13,10 +13,11 @@ import {
   School,
   Mail,
   GraduationCap,
+  LogOut,
 } from 'lucide-react';
 
 export default function SettingsView() {
-  const { userProfile, updateUserProfile } = useApp();
+  const { userProfile, updateUserProfile, signOut } = useApp();
 
   const [activeSettingsTab, setActiveSettingsTab] = useState<'profile' | 'preferences' | 'notifications'>('profile');
 
@@ -336,11 +337,20 @@ export default function SettingsView() {
           </div>
         )}
 
-        {/* Save Bar */}
-        <div className="flex items-center justify-end">
+        {/* Save Bar & Sign Out */}
+        <div className="flex items-center justify-between pt-2">
+          <button
+            type="button"
+            onClick={() => signOut()}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-rose-600 hover:bg-rose-50 border border-rose-200 text-xs font-semibold transition-all cursor-pointer"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Sign Out</span>
+          </button>
+
           <button
             type="submit"
-            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition-all active:scale-[0.98]"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm shadow-xs transition-all active:scale-[0.98] cursor-pointer"
           >
             <Save className="w-4 h-4" />
             <span>Save Preferences</span>

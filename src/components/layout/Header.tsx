@@ -10,6 +10,7 @@ import {
   BookMarked,
   Filter,
   Sparkles,
+  LogOut,
 } from 'lucide-react';
 
 export default function Header() {
@@ -21,6 +22,7 @@ export default function Header() {
     openUploadModal,
     setIsMobileSidebarOpen,
     userProfile,
+    signOut,
   } = useApp();
 
   const getPageTitle = () => {
@@ -126,6 +128,15 @@ export default function Header() {
             </button>
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-600 rounded-full" />
           </div>
+
+          {/* Sign Out Button */}
+          <button
+            onClick={() => signOut()}
+            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+            title="Sign Out of NoteNest"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
 
           {/* Upload Button */}
           <button

@@ -15,7 +15,7 @@ import {
 import { FileType } from '@/types';
 
 export default function UploadModal() {
-  const { isUploadModalOpen, closeUploadModal, addNote, userProfile } = useApp();
+  const { isUploadModalOpen, closeUploadModal, addNote, subjects } = useApp();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -25,6 +25,7 @@ export default function UploadModal() {
   const [tagsInput, setTagsInput] = useState('');
   const [fileType, setFileType] = useState<FileType>('PDF');
   const [selectedFile, setSelectedFile] = useState<{ name: string; size: string } | null>(null);
+  const [rawFile, setRawFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -58,6 +59,7 @@ export default function UploadModal() {
 
     setFileType(detectedType);
     setSelectedFile({ name: file.name, size: sizeInMB });
+    setRawFile(file);
     if (errors.file) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -77,64 +79,44 @@ export default function UploadModal() {
       newErrors.description = 'Description must be at least 15 characters';
 
     if (!courseCode.trim()) newErrors.courseCode = 'Course code is required (e.g. CS204)';
-    if (!selectedFile) newErrors.file = 'Please upload a note file (PDF, DOCX, ZIP, PPTX)';
+    if (!rawFile) newErrors.file = 'Please upload a note file (PDF, DOCX, ZIP, PPTX)';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate() || !rawFile) return;
 
     setIsSubmitting(true);
-    setUploadProgress(20);
+    setUploadProgress(30);
 
-    const timer = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 95) {
-          clearInterval(timer);
-          return 95;
-        }
-        return prev + 25;
-      });
-    }, 150);
+    const progressInterval = setInterval(() => {
+      setUploadProgress((prev) => (prev < 90 ? prev + 15 : prev));
+    }, 200);
 
-    setTimeout(() => {
-      clearInterval(timer);
-      setUploadProgress(100);
-
-      const parsedTags = tagsInput
-        .split(',')
-        .map((t) => t.trim().replace(/^#/, ''))
-        .filter(Boolean);
-
-      addNote({
+    const success = await addNote(
+      {
         title,
         description,
-        subject,
-        semester,
+        subjectName: subject,
         courseCode: courseCode.toUpperCase(),
-        uploader: {
-          name: userProfile.name,
-          avatar: userProfile.avatar,
-          department: userProfile.department,
-          isCurrentUser: true,
-        },
+        semester,
         fileType,
-        fileName: selectedFile?.name || `${title.replace(/\s+/g, '_')}.pdf`,
-        fileSize: selectedFile?.size || '3.2 MB',
-        pageCount: 16,
         status: 'Published',
-        tags: parsedTags.length > 0 ? parsedTags : ['Syllabus', 'Exam Prep', 'Lecture Notes'],
-        isRecommended: false,
-        verified: true,
-      });
+      },
+      rawFile
+    );
 
-      setIsSubmitting(false);
+    clearInterval(progressInterval);
+    setUploadProgress(100);
+    setIsSubmitting(false);
+
+    if (success) {
       resetForm();
       closeUploadModal();
-    }, 800);
+    }
   };
 
   const resetForm = () => {
@@ -143,6 +125,7 @@ export default function UploadModal() {
     setCourseCode('');
     setTagsInput('');
     setSelectedFile(null);
+    setRawFile(null);
     setErrors({});
     setUploadProgress(0);
   };
@@ -205,11 +188,19 @@ export default function UploadModal() {
                 onChange={(e) => setSubject(e.target.value)}
                 className="w-full px-3 py-2 text-sm bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               >
-                {subjectOptions.filter((s) => s !== 'All Subjects').map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
+                {subjects.length > 0
+                  ? subjects.map((s) => (
+                      <option key={s.id} value={s.name}>
+                        {s.name}
+                      </option>
+                    ))
+                  : subjectOptions
+                      .filter((s) => s !== 'All Subjects')
+                      .map((s) => (
+                        <option key={s} value={s}>
+                          {s}
+                        </option>
+                      ))}
               </select>
             </div>
 
