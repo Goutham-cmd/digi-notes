@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export default function AuthView() {
-  const { signIn, signUp } = useApp();
+  const { signIn, signUp, loginAsTestUser } = useApp();
 
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
@@ -93,6 +93,60 @@ export default function AuthView() {
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
         <div className="bg-white py-8 px-6 sm:px-8 shadow-sm border border-slate-200 rounded-2xl">
+          {/* 1-Click Instant Test / Demo Access */}
+          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-br from-indigo-50/90 via-purple-50/70 to-indigo-50/90 border border-indigo-200/80 shadow-xs">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="text-xs font-bold text-slate-900 tracking-wide">
+                  Instant Test & Evaluation Access
+                </span>
+              </div>
+              <span className="text-[10px] font-semibold bg-emerald-100/90 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-200">
+                1-Click
+              </span>
+            </div>
+            <p className="text-xs text-slate-600 mb-3 leading-relaxed">
+              Testing NoteNest? Skip sign-up and enter instantly with full access to study materials, downloads, and video lectures.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => loginAsTestUser('student')}
+                className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer"
+                title="Enter immediately as a Student"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                <span>Test as Student</span>
+                <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => loginAsTestUser('admin')}
+                className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-xs shadow-xs transition-all active:scale-[0.98] cursor-pointer"
+                title="Enter immediately as an Administrator to test Moderation"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-purple-200" />
+                <span>Test as Admin</span>
+                <ArrowRight className="w-3.5 h-3.5 ml-0.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Separator Divider */}
+          <div className="relative flex py-1 items-center mb-6">
+            <div className="flex-grow border-t border-slate-200"></div>
+            <span className="flex-shrink mx-3 text-slate-400 text-[11px] font-medium uppercase tracking-wider">
+              Or sign in with email & password
+            </span>
+            <div className="flex-grow border-t border-slate-200"></div>
+          </div>
+
           {/* Mode Switcher */}
           <div className="grid grid-cols-2 gap-1 p-1 bg-slate-100 rounded-xl mb-6">
             <button

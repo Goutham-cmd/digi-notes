@@ -19,6 +19,7 @@ interface AppContextType {
     meta: { fullName: string; university: string; department: string; semester: string }
   ) => Promise<{ error: any; needsConfirmation?: boolean }>;
   signOut: () => Promise<void>;
+  loginAsTestUser: (role?: 'student' | 'admin') => void;
 
   // Navigation & tabs
   activeTab: NavTab;
@@ -167,6 +168,60 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
+  const loginAsTestUser = (role: 'student' | 'admin' = 'student') => {
+    const isTestAdmin = role === 'admin';
+    const testUser = {
+      id: isTestAdmin ? 'test-admin-demo-id' : 'test-student-demo-id',
+      app_metadata: {},
+      user_metadata: {
+        full_name: isTestAdmin ? 'Test Administrator (Demo)' : 'Test Student (Demo)',
+        department: 'Computer Science & Engineering',
+        university: 'University Institute of Technology',
+        semester: 'Semester 4',
+      },
+      aud: 'authenticated',
+      created_at: new Date().toISOString(),
+      email: isTestAdmin ? 'test.admin@notenest.academic' : 'test.student@notenest.academic',
+    } as any;
+
+    const testSession = {
+      access_token: 'demo-test-token',
+      token_type: 'bearer',
+      expires_in: 86400,
+      refresh_token: 'demo-refresh',
+      user: testUser,
+    } as any;
+
+    try {
+      localStorage.setItem('notenest_test_role', role);
+    } catch (e) {}
+
+    setSession(testSession);
+    setUser(testUser);
+    setUserProfile({
+      ...initialUserProfile,
+      name: isTestAdmin ? 'Test Administrator (Demo)' : 'Test Student (Demo)',
+      email: isTestAdmin ? 'test.admin@notenest.academic' : 'test.student@notenest.academic',
+      role: isTestAdmin ? 'admin' : 'student',
+      university: 'University Institute of Technology',
+      department: 'Computer Science & Engineering',
+    });
+
+    if (isTestAdmin) {
+      setActiveTab('admin');
+    } else {
+      setActiveTab('dashboard');
+    }
+
+    addToast({
+      title: isTestAdmin ? 'Logged in as Test Admin' : 'Logged in as Test Student',
+      description: isTestAdmin
+        ? 'Full access to Admin Portal, Moderation Queue, and Audit Logs enabled.'
+        : 'Full access to Notes, Downloads, and Video Lectures enabled.',
+      type: 'success',
+    });
+  };
+
   // -------------------------------------------------------------
   // Supabase Auth Management (Stage 1 & Stage 4)
   // -------------------------------------------------------------
@@ -177,10 +232,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       try {
         const { data: { session: initialSession } } = await supabase.auth.getSession();
         if (mounted) {
-          setSession(initialSession);
-          setUser(initialSession?.user ?? null);
-          if (initialSession?.user) {
-            await loadUserProfile(initialSession.user);
+          if (initialSession) {
+            setSession(initialSession);
+            setUser(initialSession?.user ?? null);
+            if (initialSession?.user) {
+              await loadUserProfile(initialSession.user);
+            }
+          } else {
+            const savedRole = typeof window !== 'undefined' ? localStorage.getItem('notenest_test_role') : null;
+            if (savedRole === 'student' || savedRole === 'admin') {
+              loginAsTestUser(savedRole);
+            }
           }
           setIsLoadingAuth(false);
         }
@@ -296,6 +358,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
+    try {
+      localStorage.removeItem('notenest_test_role');
+    } catch (e) {}
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
@@ -1343,6 +1408,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         signIn,
         signUp,
         signOut,
+        loginAsTestUser,
         activeTab,
         setActiveTab,
         adminTab,
