@@ -1,0 +1,8 @@
+# NoteNest Production robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://digi-notes-deribwuxp-code-breach.vercel.app/sitemap.xml
+

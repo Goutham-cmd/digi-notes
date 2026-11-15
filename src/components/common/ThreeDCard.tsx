@@ -14,13 +14,10 @@ interface ThreeDCardProps {
 export default function ThreeDCard({
   children,
   className = '',
-  intensity = 12,
-  depth = 15,
   showGlare = true,
   onClick,
 }: ThreeDCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
-  const [transform, setTransform] = useState('rotateX(0deg) rotateY(0deg) translateZ(0px)');
   const [glarePos, setGlarePos] = useState({ x: 50, y: 50, opacity: 0 });
   const [isHovered, setIsHovered] = useState(false);
 
@@ -30,17 +27,10 @@ export default function ThreeDCard({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = -((y - centerY) / centerY) * intensity;
-    const rotateY = ((x - centerX) / centerX) * intensity;
-
-    setTransform(`rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateZ(${depth}px)`);
     setGlarePos({
       x: (x / rect.width) * 100,
       y: (y / rect.height) * 100,
-      opacity: 0.15,
+      opacity: 0.12,
     });
   };
 
@@ -50,7 +40,6 @@ export default function ThreeDCard({
 
   const handleMouseLeave = () => {
     setIsHovered(false);
-    setTransform('rotateX(0deg) rotateY(0deg) translateZ(0px)');
     setGlarePos((prev) => ({ ...prev, opacity: 0 }));
   };
 
@@ -63,26 +52,21 @@ export default function ThreeDCard({
       onMouseLeave={handleMouseLeave}
       className={`relative transition-all duration-200 ease-out ${className}`}
       style={{
-        perspective: 1000,
-        transformStyle: 'preserve-3d',
+        transform: isHovered ? 'translateY(-3px)' : 'none',
+        backfaceVisibility: 'hidden',
+        WebkitFontSmoothing: 'antialiased',
       }}
     >
-      <div
-        className="w-full h-full relative transition-transform duration-200 ease-out"
-        style={{
-          transformStyle: 'preserve-3d',
-          transform: isHovered ? transform : 'none',
-        }}
-      >
+      <div className="w-full h-full relative">
         {children}
 
-        {/* Dynamic Specular 3D Glare */}
+        {/* Dynamic Specular High-Def Glare */}
         {showGlare && (
           <div
-            className="pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-300"
+            className="pointer-events-none absolute inset-0 rounded-[inherit] transition-opacity duration-300 z-10"
             style={{
               opacity: glarePos.opacity,
-              background: `radial-gradient(circle 180px at ${glarePos.x}% ${glarePos.y}%, rgba(255, 255, 255, 0.4), transparent 80%)`,
+              background: `radial-gradient(circle 220px at ${glarePos.x}% ${glarePos.y}%, rgba(255, 255, 255, 0.45), transparent 75%)`,
               mixBlendMode: 'overlay',
             }}
           />

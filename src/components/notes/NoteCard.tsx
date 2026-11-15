@@ -18,6 +18,7 @@ import {
   FileCode,
   Play,
   Video,
+  GraduationCap,
 } from 'lucide-react';
 
 interface NoteCardProps {
@@ -186,15 +187,13 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
       <div className="mt-5 pt-3.5 border-t border-slate-100 flex flex-col gap-3">
         {/* Author info & metrics */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0">
-            <img
-              src={note.uploader.avatar}
-              alt={note.uploader.name}
-              className="w-6 h-6 rounded-full object-cover ring-1 ring-slate-200"
-            />
+          <div className="flex items-center gap-1.5 min-w-0">
+            <div className="w-5 h-5 rounded-md bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
+              <GraduationCap className="w-3 h-3" />
+            </div>
             <div className="min-w-0">
               <p className="text-xs font-medium text-slate-700 truncate flex items-center gap-1">
-                {note.uploader.name}
+                <span>{note.uploader.department || note.uploader.name}</span>
                 {note.verified && (
                   <CheckCircle2 className="w-3 h-3 text-indigo-600 inline shrink-0" />
                 )}

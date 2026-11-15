@@ -19,6 +19,8 @@ import {
   Layers,
   ChevronRight,
   UserCheck,
+  GraduationCap,
+  BookOpen,
 } from 'lucide-react';
 
 export default function DashboardView() {
@@ -264,7 +266,10 @@ export default function DashboardView() {
                     {rec.title}
                   </h5>
                   <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1.5">
-                    <span>{rec.uploader.name}</span>
+                    <span className="flex items-center gap-1 text-slate-600">
+                      <GraduationCap className="w-3 h-3 text-indigo-500" />
+                      {rec.uploader.department || rec.uploader.name}
+                    </span>
                     <span className="font-medium text-slate-600">{rec.downloadsCount} dl</span>
                   </div>
                 </div>
@@ -288,11 +293,9 @@ export default function DashboardView() {
             <div className="space-y-3.5">
               {mockActivities.map((act) => (
                 <div key={act.id} className="flex items-start gap-2.5 text-xs">
-                  <img
-                    src={act.avatar}
-                    alt={act.user}
-                    className="w-6 h-6 rounded-full object-cover shrink-0 mt-0.5"
-                  />
+                  <div className="w-6 h-6 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 mt-0.5">
+                    <BookOpen className="w-3.5 h-3.5" />
+                  </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-slate-700 leading-snug">
                       <span className="font-semibold text-slate-900">{act.user}</span>{' '}

@@ -85,6 +85,9 @@ interface AppContextType {
   editingNote: Note | null;
   openEditModal: (note: Note) => void;
   closeEditModal: () => void;
+  legalModalState: { isOpen: boolean; defaultTab?: 'privacy' | 'terms' | 'faq' };
+  openLegalModal: (tab?: 'privacy' | 'terms' | 'faq') => void;
+  closeLegalModal: () => void;
 
   // User Profile & Preferences
   userProfile: UserProfile;
@@ -141,6 +144,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [previewNote, setPreviewNote] = useState<Note | null>(null);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [legalModalState, setLegalModalState] = useState<{
+    isOpen: boolean;
+    defaultTab?: 'privacy' | 'terms' | 'faq';
+  }>({ isOpen: false });
   const [userProfile, setUserProfile] = useState<UserProfile>(initialUserProfile);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -1317,6 +1324,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const openEditModal = (note: Note) => setEditingNote(note);
   const closeEditModal = () => setEditingNote(null);
 
+  const openLegalModal = (tab: 'privacy' | 'terms' | 'faq' = 'privacy') =>
+    setLegalModalState({ isOpen: true, defaultTab: tab });
+  const closeLegalModal = () => setLegalModalState({ isOpen: false });
+
   const navigateToSubject = (subjectName: string) => {
     setSelectedSubject(subjectName);
     setActiveTab('explore');
@@ -1376,6 +1387,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         editingNote,
         openEditModal,
         closeEditModal,
+        legalModalState,
+        openLegalModal,
+        closeLegalModal,
         userProfile,
         updateUserProfile,
         toasts,

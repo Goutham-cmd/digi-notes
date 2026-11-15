@@ -17,6 +17,7 @@ import {
   Video,
   Play,
   ExternalLink,
+  GraduationCap,
 } from 'lucide-react';
 import { getEmbedUrl } from '@/lib/videoUtils';
 
@@ -94,24 +95,22 @@ export default function NotePreviewModal() {
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
               <div className="flex items-center gap-3">
-                <img
-                  src={previewNote.uploader.avatar}
-                  alt={previewNote.uploader.name}
-                  className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-100"
-                />
+                <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs shrink-0">
+                  <GraduationCap className="w-5 h-5" />
+                </div>
                 <div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm font-semibold text-slate-900">
-                      {previewNote.uploader.name}
+                      {previewNote.uploader.department || previewNote.uploader.name}
                     </span>
                     {previewNote.verified && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-indigo-700 bg-indigo-50 px-1.5 py-0.2 rounded border border-indigo-100">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-100">
                         <CheckCircle2 className="w-3 h-3 text-indigo-600" />
-                        Verified Author
+                        Verified Curriculum
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500">{previewNote.uploader.department}</p>
+                  <p className="text-xs text-slate-500">Peer-Reviewed Course Repository</p>
                 </div>
               </div>
 
@@ -221,7 +220,7 @@ export default function NotePreviewModal() {
                     {previewNote.title}
                   </h3>
                   <p className="text-[11px] text-slate-500">
-                    Prepared by: {previewNote.uploader.name}
+                    Source: {previewNote.uploader.department || previewNote.subject} • NoteNest Verified
                   </p>
                 </div>
 

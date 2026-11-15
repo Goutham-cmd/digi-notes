@@ -137,8 +137,9 @@ export default function Header() {
           <div className="relative">
             <button
               onClick={() => setActiveTab('explore')}
-              className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
+              className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
               title="Recent Activity"
+              aria-label="Recent activity and notifications"
             >
               <Bell className="w-4 h-4" />
             </button>
@@ -148,8 +149,9 @@ export default function Header() {
           {/* Sign Out Button */}
           <button
             onClick={() => signOut()}
-            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+            className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
             title="Sign Out of NoteNest"
+            aria-label="Sign out of your NoteNest account"
           >
             <LogOut className="w-4 h-4" />
           </button>

@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export default function SettingsView() {
-  const { userProfile, updateUserProfile, signOut } = useApp();
+  const { userProfile, updateUserProfile, signOut, openLegalModal } = useApp();
 
   const [activeSettingsTab, setActiveSettingsTab] = useState<'profile' | 'preferences' | 'notifications'>('profile');
 
@@ -336,6 +336,39 @@ export default function SettingsView() {
             </div>
           </div>
         )}
+
+        {/* Academic Policies & Support Card */}
+        <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
+          <div>
+            <h4 className="font-bold text-slate-900 text-sm">Academic Trust & Legal Policies</h4>
+            <p className="text-slate-500 mt-0.5">
+              Review NoteNest student privacy rights, honor code terms, and campus FAQs.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => openLegalModal('privacy')}
+              className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 hover:text-indigo-600 transition-colors font-medium shadow-2xs"
+            >
+              Privacy Policy
+            </button>
+            <button
+              type="button"
+              onClick={() => openLegalModal('terms')}
+              className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 hover:text-indigo-600 transition-colors font-medium shadow-2xs"
+            >
+              Terms of Use
+            </button>
+            <button
+              type="button"
+              onClick={() => openLegalModal('faq')}
+              className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg hover:border-indigo-300 hover:text-indigo-600 transition-colors font-medium shadow-2xs"
+            >
+              Help & FAQ
+            </button>
+          </div>
+        </div>
 
         {/* Save Bar & Sign Out */}
         <div className="flex items-center justify-between pt-2">

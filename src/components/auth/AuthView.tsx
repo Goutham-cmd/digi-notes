@@ -275,10 +275,15 @@ export default function AuthView() {
             </button>
           </form>
 
-          {/* Campus Security Badge */}
-          <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-2 text-[11px] text-slate-400">
-            <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>Protected by Supabase Auth & Row Level Security</span>
+          {/* Campus Security Badge & Terms note */}
+          <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col items-center gap-1.5 text-center text-[11px] text-slate-400">
+            <div className="flex items-center gap-1.5 text-slate-500">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>Protected by University Auth & Row-Level Security</span>
+            </div>
+            <p className="text-[10px] text-slate-400">
+              By continuing, you agree to NoteNest Academic Honor Code & Privacy Standards.
+            </p>
           </div>
         </div>
       </div>

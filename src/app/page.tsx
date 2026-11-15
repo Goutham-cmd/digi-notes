@@ -16,7 +16,7 @@ import ThreeDBackground from '@/components/common/ThreeDBackground';
 import { BookOpen, Loader2 } from 'lucide-react';
 
 export default function Home() {
-  const { activeTab, session, isLoadingAuth } = useApp();
+  const { activeTab, session, isLoadingAuth, openLegalModal } = useApp();
 
   if (isLoadingAuth) {
     return (
@@ -78,16 +78,33 @@ export default function Home() {
         </main>
 
         {/* Minimal Campus SaaS Footer */}
-        <footer className="border-t border-slate-200/80 bg-white/50 py-4 px-4 sm:px-8 text-center sm:flex sm:items-center sm:justify-between text-xs text-slate-500">
+        <footer className="border-t border-slate-200/80 bg-white/70 py-4 px-4 sm:px-8 text-center sm:flex sm:items-center sm:justify-between text-xs text-slate-500">
           <div>
             <span className="font-semibold text-slate-700">NoteNest</span> — Digital Notes & Resource Sharing Platform. Built for University Excellence.
           </div>
-          <div className="mt-2 sm:mt-0 flex items-center justify-center gap-4 text-slate-400">
-            <span>Syllabus Aligned</span>
+          <div className="mt-2 sm:mt-0 flex flex-wrap items-center justify-center gap-3 text-slate-500">
+            <button
+              onClick={() => openLegalModal('privacy')}
+              className="hover:text-indigo-600 transition-colors"
+            >
+              Privacy Policy
+            </button>
             <span>•</span>
-            <span>Peer Reviewed</span>
+            <button
+              onClick={() => openLegalModal('terms')}
+              className="hover:text-indigo-600 transition-colors"
+            >
+              Terms of Service
+            </button>
             <span>•</span>
-            <span>Campus Academic Network</span>
+            <button
+              onClick={() => openLegalModal('faq')}
+              className="hover:text-indigo-600 transition-colors"
+            >
+              FAQ
+            </button>
+            <span>•</span>
+            <span className="text-slate-400">Campus Academic Network</span>
           </div>
         </footer>
       </div>
