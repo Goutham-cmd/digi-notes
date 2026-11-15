@@ -12,6 +12,7 @@ import CategoriesView from '@/components/views/CategoriesView';
 import SettingsView from '@/components/views/SettingsView';
 import AdminPortal from '@/components/admin/AdminPortal';
 import AuthView from '@/components/auth/AuthView';
+import ThreeDBackground from '@/components/common/ThreeDBackground';
 import { BookOpen, Loader2 } from 'lucide-react';
 
 export default function Home() {
@@ -57,18 +58,23 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-slate-50 flex relative overflow-x-hidden">
+      {/* Global 3D Ambient Perspective Background */}
+      <ThreeDBackground />
+
       {/* Fixed Sidebar */}
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-screen lg:pl-64 transition-all">
+      <div className="flex-1 flex flex-col min-h-screen lg:pl-64 transition-all relative z-10">
         {/* Sticky Header */}
         <Header />
 
-        {/* Dynamic Page Content */}
+        {/* Dynamic Page Content with Clean 3D Transitions */}
         <main className="flex-1 px-4 sm:px-8 py-6 max-w-7xl w-full mx-auto">
-          {renderActiveView()}
+          <div key={activeTab} className="animate-3d-view">
+            {renderActiveView()}
+          </div>
         </main>
 
         {/* Minimal Campus SaaS Footer */}

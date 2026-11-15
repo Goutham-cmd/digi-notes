@@ -11,6 +11,7 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: hidden;
 }
 
 /* Custom subtle scrollbar */
@@ -30,4 +31,80 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* -------------------------------------------------------------
+   Clean & Simple 3D Global Micro-Interactions & Depth System
+   ------------------------------------------------------------- */
+
+/* 3D Container & Perspective */
+.perspective-container {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+/* Tactile 3D Buttons */
+.btn-3d {
+  transition: transform 0.18s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.18s ease-out;
+  transform: perspective(600px) translateZ(0px);
+}
+
+.btn-3d:hover {
+  transform: perspective(600px) translateY(-2px) translateZ(8px);
+  box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.25);
+}
+
+.btn-3d:active {
+  transform: perspective(600px) translateY(1px) translateZ(-2px);
+  box-shadow: 0 2px 6px -1px rgba(79, 70, 229, 0.2);
+}
+
+/* Clean 3D Card Hover & Float */
+.card-3d-lift {
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s ease-out, border-color 0.24s ease-out;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.card-3d-lift:hover {
+  transform: perspective(1000px) translateY(-5px) translateZ(12px) rotateX(1.2deg);
+  box-shadow: 0 20px 30px -10px rgba(15, 23, 42, 0.1), 0 6px 12px -3px rgba(15, 23, 42, 0.05);
+}
+
+/* 3D Pop Modals */
+.modal-3d-appear {
+  animation: modalPop3D 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-style: preserve-3d;
+}
+
+@keyframes modalPop3D {
+  0% {
+    opacity: 0;
+    transform: perspective(1000px) scale(0.94) rotateX(6deg) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1000px) scale(1) rotateX(0deg) translateY(0);
+  }
+}
+
+/* Subtle continuous ambient 3D floating animation */
+.float-3d-gentle {
+  animation: floatGentle 6s ease-in-out infinite alternate;
+}
+
+@keyframes floatGentle {
+  0% {
+    transform: translateY(0px) rotateZ(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotateZ(0.5deg);
+  }
+  100% {
+    transform: translateY(2px) rotateZ(-0.5deg);
+  }
 }

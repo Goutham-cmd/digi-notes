@@ -47,7 +47,7 @@ export default function AdminOverview({ onOpenReject }: AdminOverviewProps) {
     <div className="space-y-8 animate-in fade-in duration-300">
       {/* Metric Cards Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4">
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between card-3d-lift">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
               Students
@@ -62,7 +62,7 @@ export default function AdminOverview({ onOpenReject }: AdminOverviewProps) {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between card-3d-lift">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
               Published
@@ -79,7 +79,7 @@ export default function AdminOverview({ onOpenReject }: AdminOverviewProps) {
 
         <div
           onClick={() => setAdminTab('moderation')}
-          className="bg-white p-4 rounded-2xl border border-amber-200 shadow-xs flex flex-col justify-between cursor-pointer hover:border-amber-300 hover:shadow-sm transition-all"
+          className="bg-white p-4 rounded-2xl border border-amber-200 shadow-xs flex flex-col justify-between cursor-pointer hover:border-amber-300 card-3d-lift"
         >
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-amber-700 uppercase tracking-wider">
@@ -97,7 +97,7 @@ export default function AdminOverview({ onOpenReject }: AdminOverviewProps) {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between card-3d-lift">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
               Rejected
@@ -112,7 +112,7 @@ export default function AdminOverview({ onOpenReject }: AdminOverviewProps) {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between card-3d-lift">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
               Downloads
@@ -127,7 +127,7 @@ export default function AdminOverview({ onOpenReject }: AdminOverviewProps) {
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col justify-between card-3d-lift">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
               Subjects

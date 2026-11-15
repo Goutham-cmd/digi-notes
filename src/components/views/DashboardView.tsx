@@ -188,7 +188,7 @@ export default function DashboardView() {
             <button
               key={idx}
               onClick={() => navigateToSubject(sub.name)}
-              className="p-3.5 bg-white border border-slate-200/90 rounded-xl hover:border-indigo-300 hover:shadow-xs transition-all text-left flex flex-col justify-between group"
+              className="p-3.5 bg-white border border-slate-200/90 rounded-xl hover:border-indigo-300 card-3d-lift text-left flex flex-col justify-between group cursor-pointer"
             >
               <span className="text-[10px] font-mono font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded w-fit">
                 {sub.code}

@@ -64,7 +64,7 @@ export default function AdminPortal() {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Top Banner & Sub-Navigation */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs space-y-4 card-3d-lift">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center border border-purple-200">
@@ -128,7 +128,7 @@ export default function AdminPortal() {
       </div>
 
       {/* Dynamic Sub-View */}
-      <main>
+      <main key={adminTab} className="animate-3d-view">
         {adminTab === 'overview' && (
           <AdminOverview onOpenReject={(n) => setRejectingNote(n)} />
         )}

@@ -3,6 +3,7 @@
 import React from 'react';
 import { Note } from '@/types';
 import { useApp } from '@/context/AppContext';
+import ThreeDCard from '@/components/common/ThreeDCard';
 import {
   FileText,
   Download,
@@ -70,11 +71,12 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
   const FileIcon = fileBadge.icon;
 
   return (
-    <div className="group relative bg-white border border-slate-200 rounded-xl p-5 shadow-xs hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between">
-      <div>
-        {/* Top Header: Badges & Bookmark */}
-        <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex flex-wrap items-center gap-1.5">
+    <ThreeDCard intensity={7} depth={10} className="h-full">
+      <div className="group relative bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs hover:border-indigo-300 transition-all flex flex-col justify-between h-full card-3d-lift">
+        <div>
+          {/* Top Header: Badges & Bookmark */}
+          <div className="flex items-center justify-between gap-2 mb-3" style={{ transform: 'translateZ(12px)' }}>
+            <div className="flex flex-wrap items-center gap-1.5">
             {/* File type */}
             <span
               className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md border ${fileBadge.bg}`}
@@ -235,7 +237,7 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
 
             <button
               onClick={() => openPreviewModal(note)}
-              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-700 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-lg border border-slate-200 transition-colors"
+              className="btn-3d inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-700 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-lg border border-slate-200 transition-colors"
             >
               <Eye className="w-3.5 h-3.5" />
               <span>Preview</span>
@@ -243,7 +245,7 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
 
             <button
               onClick={() => downloadNote(note)}
-              className="inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors"
+              className="btn-3d inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
               <span>Get</span>
@@ -251,6 +253,7 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </ThreeDCard>
   );
 }

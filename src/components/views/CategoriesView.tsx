@@ -63,7 +63,7 @@ export default function CategoriesView() {
             <div
               key={category.id}
               onClick={() => navigateToSubject(category.name.split('&')[0].trim())}
-              className="group bg-white border border-slate-200 rounded-xl p-5 shadow-xs hover:shadow-md hover:border-indigo-300 transition-all cursor-pointer flex flex-col justify-between"
+              className="group bg-white border border-slate-200/90 rounded-xl p-5 shadow-xs hover:border-indigo-300 card-3d-lift cursor-pointer flex flex-col justify-between"
             >
               <div>
                 {/* Header with Icon and Count badge */}

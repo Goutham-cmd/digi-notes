@@ -16,3 +16,5 @@ export { default as SettingsView } from './views/SettingsView';
 export { default as AdminPortal } from './admin/AdminPortal';
 export { default as AuthView } from './auth/AuthView';
 export { default as Interactive3DModel } from './dashboard/Interactive3DModel';
+export { default as ThreeDCard } from './common/ThreeDCard';
+export { default as ThreeDBackground } from './common/ThreeDBackground';
