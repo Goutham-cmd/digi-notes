@@ -221,23 +221,27 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
             {note.fileSize} {note.pageCount ? `• ${note.pageCount} pgs` : ''}
           </span>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 relative z-20">
             {showActions && note.uploader.isCurrentUser && (
               <>
                 <button
-                  onClick={() => openEditModal(note)}
-                  className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openEditModal(note);
+                  }}
+                  className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
                   title="Edit note"
                 >
                   <Edit3 className="w-3.5 h-3.5" />
                 </button>
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     if (confirm(`Are you sure you want to delete "${note.title}"?`)) {
                       deleteNote(note.id);
                     }
                   }}
-                  className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                  className="p-1.5 text-slate-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                   title="Delete note"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -247,8 +251,11 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
 
             {note.videoUrl && (
               <button
-                onClick={() => openPreviewModal(note)}
-                className="btn-3d inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openPreviewModal(note);
+                }}
+                className="btn-3d inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 rounded-lg border border-rose-200 transition-colors cursor-pointer"
                 title="Watch attached video lecture"
               >
                 <Play className="w-3 h-3 fill-rose-600 text-rose-600" />
@@ -257,16 +264,24 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
             )}
 
             <button
-              onClick={() => openPreviewModal(note)}
-              className="btn-3d inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-700 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-lg border border-slate-200 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                openPreviewModal(note);
+              }}
+              className="btn-3d inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-700 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+              title="Preview notes"
             >
               <Eye className="w-3.5 h-3.5" />
               <span>Preview</span>
             </button>
 
             <button
-              onClick={() => downloadNote(note)}
-              className="btn-3d inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                downloadNote(note);
+              }}
+              className="btn-3d inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-lg shadow-xs transition-all cursor-pointer"
+              title={`Download ${note.fileName}`}
             >
               <Download className="w-3.5 h-3.5" />
               <span>Get</span>

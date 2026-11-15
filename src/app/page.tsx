@@ -87,7 +87,7 @@ export default function Home() {
             <span>•</span>
             <span>Peer Reviewed</span>
             <span>•</span>
-            <span>Phase 1 Hackathon Release</span>
+            <span>Campus Academic Network</span>
           </div>
         </footer>
       </div>

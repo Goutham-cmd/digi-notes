@@ -81,9 +81,6 @@ export default function AuthView() {
             <BookOpen className="w-6 h-6" />
           </div>
           <span className="font-extrabold text-2xl text-slate-900 tracking-tight">NoteNest</span>
-          <span className="text-[11px] font-semibold bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200/60">
-            Phase 2 Live
-          </span>
         </div>
 
         <h2 className="text-center text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
