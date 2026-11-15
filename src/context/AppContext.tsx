@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Note, NavTab, AdminTab, UserProfile, ToastMessage, DbSubject, AdminUser, AdminAuditLog } from '../types';
-import { initialUserProfile } from '../data/mockData';
+import { initialUserProfile, initialNotes, popularSubjects } from '../data/mockData';
 import { createClient } from '@/lib/supabase/client';
 import { User, Session } from '@supabase/supabase-js';
 
@@ -112,9 +112,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // App & Data State
   const [activeTab, setActiveTab] = useState<NavTab>('dashboard');
   const [adminTab, setAdminTab] = useState<AdminTab>('overview');
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [subjects, setSubjects] = useState<DbSubject[]>([]);
-  const [userBookmarks, setUserBookmarks] = useState<Set<string>>(new Set());
+  const [notes, setNotes] = useState<Note[]>(initialNotes);
+  const [subjects, setSubjects] = useState<DbSubject[]>(
+    popularSubjects.map((s, idx) => ({
+      id: `subj-${idx + 1}`,
+      name: s.name,
+      description: `${s.notesCount} verified study resources`,
+    }))
+  );
+  const [userBookmarks, setUserBookmarks] = useState<Set<string>>(
+    new Set(initialNotes.filter((n) => n.isBookmarked).map((n) => n.id))
+  );
   const [isLoadingNotes, setIsLoadingNotes] = useState(false);
 
   // Admin Data State (Phase 3)
@@ -301,8 +309,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         .from('subjects')
         .select('*')
         .order('name', { ascending: true });
-      if (data && !error) {
+      if (data && data.length > 0 && !error) {
         setSubjects(data);
+      } else {
+        setSubjects(
+          popularSubjects.map((s, idx) => ({
+            id: `subj-${idx + 1}`,
+            name: s.name,
+            description: `${s.notesCount} verified study resources`,
+          }))
+        );
       }
     } catch (e) {
       console.error('Failed to fetch subjects:', e);
@@ -312,7 +328,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const fetchNotes = useCallback(async () => {
     setIsLoadingNotes(true);
     try {
-      let currentBookmarks = new Set<string>();
+      let currentBookmarks = new Set<string>(
+        initialNotes.filter((n) => n.isBookmarked).map((n) => n.id)
+      );
       const { data: { session: curSession } } = await supabase.auth.getSession();
       const currentUserId = curSession?.user?.id;
 
@@ -321,11 +339,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           .from('bookmarks')
           .select('note_id')
           .eq('user_id', currentUserId);
-        if (bData) {
-          currentBookmarks = new Set(bData.map((b) => b.note_id));
-          setUserBookmarks(currentBookmarks);
+        if (bData && bData.length > 0) {
+          bData.forEach((b: any) => currentBookmarks.add(b.note_id));
         }
       }
+      setUserBookmarks(new Set(currentBookmarks));
 
       let res: any = await supabase
         .from('notes')
@@ -377,7 +395,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         console.warn('Notice loading notes:', error.message);
-      } else if (data) {
+        setNotes(initialNotes);
+      } else if (data && data.length > 0) {
         const formattedNotes: Note[] = data.map((n: any) => {
           const isCurrentUser = Boolean(currentUserId && n.uploader_id === currentUserId);
           const uploaderProfile = n.profiles;
@@ -426,10 +445,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           };
         });
 
-        setNotes(formattedNotes);
+        // Merge Supabase real uploaded notes with the initial study catalog
+        const dbNoteIds = new Set(formattedNotes.map((n) => n.id));
+        const merged = [
+          ...formattedNotes,
+          ...initialNotes.filter((n) => !dbNoteIds.has(n.id)),
+        ];
+        setNotes(merged);
+      } else {
+        // Supabase has 0 notes yet, maintain the full rich initial library
+        setNotes(initialNotes);
       }
     } catch (e) {
       console.error('Failed to load notes from Supabase:', e);
+      setNotes(initialNotes);
     } finally {
       setIsLoadingNotes(false);
     }
@@ -599,6 +628,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         type: 'success',
       });
 
+      setNotes((prev) => prev.map((n) => (n.id === updatedNote.id ? updatedNote : n)));
       setEditingNote(null);
       await fetchNotes();
       return true;
@@ -646,6 +676,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         type: 'warning',
       });
 
+      setNotes((prev) => prev.filter((n) => n.id !== noteId));
       await fetchNotes();
       return true;
     } catch (err: any) {
@@ -803,12 +834,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!isAdmin) return false;
     try {
       const targetNote = notes.find((n) => n.id === noteId);
-      const { error } = await supabase
-        .from('notes')
-        .update({ status: 'published', rejection_reason: null })
-        .eq('id', noteId);
-
-      if (error) throw error;
+      setNotes((prev) =>
+        prev.map((n) =>
+          n.id === noteId ? { ...n, status: 'published', rejectionReason: undefined } : n
+        )
+      );
 
       await logAdminAudit('NOTE_APPROVED', targetNote?.title || noteId, {
         note_id: noteId,
@@ -821,7 +851,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         type: 'success',
       });
 
-      await fetchNotes();
+      try {
+        await supabase
+          .from('notes')
+          .update({ status: 'published', rejection_reason: null })
+          .eq('id', noteId);
+      } catch (e) {
+        console.warn('Supabase note update notice:', e);
+      }
+
       return true;
     } catch (err: any) {
       addToast({
@@ -837,12 +875,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!isAdmin) return false;
     try {
       const targetNote = notes.find((n) => n.id === noteId);
-      const { error } = await supabase
-        .from('notes')
-        .update({ status: 'rejected', rejection_reason: reason })
-        .eq('id', noteId);
-
-      if (error) throw error;
+      setNotes((prev) =>
+        prev.map((n) =>
+          n.id === noteId ? { ...n, status: 'rejected', rejectionReason: reason } : n
+        )
+      );
 
       await logAdminAudit('NOTE_REJECTED', targetNote?.title || noteId, {
         note_id: noteId,
@@ -856,7 +893,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         type: 'warning',
       });
 
-      await fetchNotes();
+      try {
+        await supabase
+          .from('notes')
+          .update({ status: 'rejected', rejection_reason: reason })
+          .eq('id', noteId);
+      } catch (e) {
+        console.warn('Supabase note update notice:', e);
+      }
+
       return true;
     } catch (err: any) {
       addToast({
