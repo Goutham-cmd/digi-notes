@@ -293,11 +293,11 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
                 e.stopPropagation();
                 downloadNote(note);
               }}
-              className="btn-3d inline-flex items-center gap-1 px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-lg shadow-xs transition-all cursor-pointer"
-              title={`Download ${note.fileName}`}
+              className="btn-3d inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-lg shadow-xs transition-all cursor-pointer"
+              title={`Download PDF: ${note.fileName}`}
             >
               <Download className="w-3.5 h-3.5" />
-              <span>Get</span>
+              <span>Get PDF</span>
             </button>
           </div>
         </div>

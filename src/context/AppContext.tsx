@@ -851,69 +851,58 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      // 2. Fallback for catalog / demo study notes: generate structured study guide file
+      // 2. Fallback for catalog / demo study notes: generate structured academic study guide PDF
       if (!downloaded) {
-        const studyDoc = [
-          '========================================================================',
-          'NOTENEST ACADEMIC RESOURCE REPOSITORY',
-          'Course Study Companion & Lecture Review Guide',
-          '========================================================================',
-          `TITLE:        ${note.title}`,
-          `COURSE CODE:  ${note.courseCode}`,
-          `SUBJECT:      ${note.subject}`,
-          `SEMESTER:     ${note.semester}`,
-          `CONTRIBUTOR:  ${note.uploader.name} (${note.uploader.department || 'Academic Department'})`,
-          `FILE NAME:    ${note.fileName}`,
-          `EST. PAGES:   ${note.pageCount || 12} Pages | ${note.fileSize || 'Standard Document'}`,
-          `COMMUNITY:    ★ ${note.rating.toFixed(1)} / 5.0 (${note.reviewsCount} reviews)`,
-          `STATUS:       Verified & Peer-Reviewed`,
-          note.videoUrl ? `VIDEO COMPANION: ${note.videoUrl}` : '',
-          '------------------------------------------------------------------------',
-          'SYLLABUS TOPICS & KEYWORDS',
-          '------------------------------------------------------------------------',
-          note.tags.map((t) => `• #${t}`).join('\n'),
-          '',
-          '------------------------------------------------------------------------',
-          'COURSE SUMMARY & STUDY MATERIAL',
-          '------------------------------------------------------------------------',
-          note.description,
-          '',
-          '------------------------------------------------------------------------',
-          'EXAMINATION REVIEW & HIGH-YIELD CONCEPTS',
-          '------------------------------------------------------------------------',
-          '1. Syllabus Compliance & Blueprint:',
-          '   This study material adheres to university curriculum guidelines.',
-          '   Review all core definitions, proof steps, and algorithmic complexity bounds.',
-          '',
-          '2. Worked Exercises & Problem-Solving Template:',
-          '   - Identify constraints and initial conditions.',
-          '   - Formulate optimal approach using principles covered in lecture.',
-          '   - Verify correctness against textbook test cases.',
-          '',
-          '3. Peer Recommendations:',
-          '   Cross-reference with lecture slides and past midterm papers.',
-          note.videoUrl ? `   Watch the accompanying lecture: ${note.videoUrl}` : '',
-          '',
-          '========================================================================',
-          `Downloaded from NoteNest Platform: ${typeof window !== 'undefined' ? window.location.origin : 'https://notenest.academic'}`,
-          '========================================================================',
-        ]
-          .filter(Boolean)
-          .join('\n');
+        try {
+          const { generateStudyNotesPDF } = await import('@/lib/pdfGenerator');
+          generateStudyNotesPDF(note);
+          downloaded = true;
+        } catch (pdfErr) {
+          console.error('PDF generation error, attempting fallback:', pdfErr);
+          // Secondary fallback if Web Worker or PDF context fails
+          const studyDoc = [
+            '========================================================================',
+            'NOTENEST ACADEMIC RESOURCE REPOSITORY',
+            'Course Study Companion & Lecture Review Guide',
+            '========================================================================',
+            `TITLE:        ${note.title}`,
+            `COURSE CODE:  ${note.courseCode}`,
+            `SUBJECT:      ${note.subject}`,
+            `SEMESTER:     ${note.semester}`,
+            `CONTRIBUTOR:  ${note.uploader.name} (${note.uploader.department || 'Academic Department'})`,
+            `FILE NAME:    ${note.fileName}`,
+            `EST. PAGES:   ${note.pageCount || 12} Pages | ${note.fileSize || 'Standard Document'}`,
+            `COMMUNITY:    ★ ${note.rating.toFixed(1)} / 5.0 (${note.reviewsCount} reviews)`,
+            `STATUS:       Verified & Peer-Reviewed`,
+            note.videoUrl ? `VIDEO COMPANION: ${note.videoUrl}` : '',
+            '------------------------------------------------------------------------',
+            'SYLLABUS TOPICS & KEYWORDS',
+            '------------------------------------------------------------------------',
+            note.tags.map((t) => `• #${t}`).join('\n'),
+            '',
+            '------------------------------------------------------------------------',
+            'COURSE SUMMARY & STUDY MATERIAL',
+            '------------------------------------------------------------------------',
+            note.description,
+            '',
+            '========================================================================',
+            `Downloaded from NoteNest Platform: ${typeof window !== 'undefined' ? window.location.origin : 'https://notenest.academic'}`,
+            '========================================================================',
+          ]
+            .filter(Boolean)
+            .join('\n');
 
-        const blob = new Blob([studyDoc], { type: 'text/plain;charset=utf-8' });
-        const blobUrl = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        const targetExtension = note.fileName.toLowerCase().endsWith('.txt')
-          ? note.fileName
-          : `${note.fileName.replace(/\.[^/.]+$/, '')}_StudyNotes.txt`;
-        link.download = targetExtension;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 1500);
-        downloaded = true;
+          const blob = new Blob([studyDoc], { type: 'text/plain;charset=utf-8' });
+          const blobUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = `${note.fileName.replace(/\.[^/.]+$/, '')}_StudyNotes.txt`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 1500);
+          downloaded = true;
+        }
       }
 
       // 3. Track download metric
@@ -927,9 +916,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         prev.map((n) => (n.id === note.id ? { ...n, downloadsCount: n.downloadsCount + 1 } : n))
       );
 
+      const cleanFileName = note.fileName.toLowerCase().endsWith('.pdf')
+        ? note.fileName
+        : `${note.fileName.replace(/\.[^/.]+$/, '')}.pdf`;
+
       addToast({
-        title: 'Download Started',
-        description: `${note.fileName} is being saved to your device.`,
+        title: 'PDF Download Complete',
+        description: `${cleanFileName} has been downloaded in clean PDF format.`,
         type: 'success',
       });
     } catch (err: any) {

@@ -301,7 +301,7 @@ export default function NotePreviewModal() {
               className="flex items-center gap-2 px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm shadow-indigo-200 transition-all active:scale-[0.98]"
             >
               <Download className="w-4 h-4" />
-              <span>Download File</span>
+              <span>Download PDF</span>
             </button>
           </div>
         </div>
