@@ -56,7 +56,7 @@ export default function ThreeDCard({
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative transition-all duration-200 ease-out ${className}`}
+      className={`relative transition-all duration-200 ease-out w-full max-w-full overflow-hidden ${className}`}
       style={{
         transform: isHovered ? 'translateY(-3px)' : 'none',
         backfaceVisibility: 'hidden',

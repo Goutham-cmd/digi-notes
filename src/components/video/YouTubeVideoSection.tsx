@@ -86,12 +86,12 @@ export default function YouTubeVideoSection({
           </div>
 
           {/* Quick YouTube Search Out link */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
             <a
               href={youtubeDirectUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold shadow-md shadow-rose-900/40 transition-all active:scale-95"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-semibold shadow-md shadow-rose-900/40 transition-all active:scale-95"
               title="Search live on YouTube"
             >
               <Film className="w-4 h-4" />

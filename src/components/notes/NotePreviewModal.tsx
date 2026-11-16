@@ -39,18 +39,18 @@ export default function NotePreviewModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] modal-3d-appear">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh] modal-3d-appear">
         {/* Top Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold px-2.5 py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-100 bg-slate-50/50">
+          <div className="flex items-center gap-1.5 sm:gap-2 truncate mr-2">
+            <span className="text-xs font-semibold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100 truncate">
               {previewNote.subject}
             </span>
-            <span className="text-xs font-mono font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
+            <span className="text-xs font-mono font-medium text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded shrink-0">
               {previewNote.courseCode}
             </span>
-            <span className="text-xs text-slate-500 font-medium">{previewNote.semester}</span>
+            <span className="text-xs text-slate-500 font-medium hidden sm:inline shrink-0">{previewNote.semester}</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -267,20 +267,20 @@ export default function NotePreviewModal() {
           </div>
         </div>
 
-        {/* Modal Footer */}
-        <div className="flex items-center justify-between px-6 py-4 bg-slate-50 border-t border-slate-200">
-          <div className="text-xs text-slate-500">
+        {/* Modal Footer with Mobile-Safe Layout */}
+        <div className="flex flex-wrap items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-slate-50 border-t border-slate-200 gap-2">
+          <div className="text-xs text-slate-500 truncate max-w-[180px] sm:max-w-none">
             <span className="font-semibold text-slate-800">{previewNote.fileName}</span> (
             {previewNote.fileSize})
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 ml-auto">
             <button
               onClick={() => {
                 closePreviewModal();
                 setActiveTab('chat');
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl border border-indigo-200/80 transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl border border-indigo-200/80 transition-colors"
               title="Discuss this note in Student Messages"
             >
               <MessageSquare className="w-3.5 h-3.5" />
@@ -290,7 +290,7 @@ export default function NotePreviewModal() {
 
             <button
               onClick={closePreviewModal}
-              className="px-3.5 py-2 text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-xl transition-colors"
+              className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-200/60 rounded-xl transition-colors"
             >
               Close
             </button>
@@ -298,7 +298,7 @@ export default function NotePreviewModal() {
               onClick={() => {
                 downloadNote(previewNote);
               }}
-              className="flex items-center gap-2 px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm shadow-indigo-200 transition-all active:scale-[0.98]"
+              className="flex items-center gap-1.5 px-3 sm:px-5 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm shadow-indigo-200 transition-all active:scale-[0.98]"
             >
               <Download className="w-4 h-4" />
               <span>Download PDF</span>

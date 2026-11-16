@@ -63,7 +63,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex relative overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 flex relative overflow-x-hidden w-full max-w-[100vw]">
       {/* Global 3D Ambient Perspective Background */}
       <ThreeDBackground />
 
@@ -71,12 +71,12 @@ export default function Home() {
       <Sidebar />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-screen lg:pl-64 transition-all relative z-10">
+      <div className="flex-1 flex flex-col min-h-screen lg:pl-64 transition-all relative z-10 w-full max-w-full min-w-0 overflow-x-hidden">
         {/* Sticky Header */}
         <Header />
 
         {/* Dynamic Page Content with Clean 3D Transitions */}
-        <main className="flex-1 px-4 sm:px-8 py-6 max-w-7xl w-full mx-auto pb-24 lg:pb-6">
+        <main className="flex-1 px-3 sm:px-8 py-5 sm:py-6 max-w-7xl w-full mx-auto pb-24 lg:pb-6 min-w-0 max-w-full overflow-x-hidden">
           <div key={activeTab} className="animate-3d-view">
             {renderActiveView()}
           </div>

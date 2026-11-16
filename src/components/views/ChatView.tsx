@@ -210,32 +210,32 @@ export default function ChatView() {
           </span>
         </div>
 
-        {/* Channel List */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-1">
+        {/* Channel List: Horizontal scroll on mobile, vertical on desktop */}
+        <div className="flex lg:flex-col overflow-x-auto lg:overflow-y-auto p-2 lg:p-3 space-x-1.5 lg:space-x-0 lg:space-y-1 scrollbar-none shrink-0">
           {channels.map((chan) => {
             const isActive = chan.id === activeChannelId;
             return (
               <button
                 key={chan.id}
                 onClick={() => handleSelectChannel(chan.id)}
-                className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left transition-all ${
+                className={`flex items-center justify-between p-2 lg:p-2.5 rounded-xl text-left transition-all shrink-0 w-auto lg:w-full ${
                   isActive
                     ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'text-slate-700 hover:bg-slate-200/60'
+                    : 'text-slate-700 bg-white lg:bg-transparent border border-slate-200 lg:border-0 hover:bg-slate-200/60'
                 }`}
               >
-                <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex items-center gap-2 lg:gap-2.5 min-w-0">
                   <div
-                    className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
-                      isActive ? 'bg-indigo-500 text-white' : 'bg-white border border-slate-200/80'
+                    className={`w-6 h-6 lg:w-7 lg:h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                      isActive ? 'bg-indigo-500 text-white' : 'bg-slate-100 lg:bg-white border border-slate-200/80'
                     }`}
                   >
-                    <Hash className="w-3.5 h-3.5" />
+                    <Hash className="w-3 h-3 lg:w-3.5 lg:h-3.5" />
                   </div>
                   <div className="min-w-0">
                     <p className="text-xs font-semibold truncate leading-snug">#{chan.name}</p>
                     <p
-                      className={`text-[10px] truncate ${
+                      className={`text-[10px] truncate hidden sm:block ${
                         isActive ? 'text-indigo-200' : 'text-slate-400'
                       }`}
                     >
@@ -244,7 +244,7 @@ export default function ChatView() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                <div className="hidden lg:flex items-center gap-1.5 shrink-0 ml-2">
                   <span
                     className={`text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-1 ${
                       isActive

@@ -131,12 +131,12 @@ export default function ExploreView() {
             )}
           </div>
 
-          <div className="flex items-center gap-2 self-end sm:self-auto w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             {/* View Mode Toggle: Study Notes vs YouTube Videos */}
-            <div className="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/80 shrink-0">
+            <div className="grid grid-cols-2 sm:flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/80 w-full sm:w-auto shrink-0">
               <button
                 onClick={() => setViewMode('notes')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                className={`flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                   viewMode === 'notes'
                     ? 'bg-white text-slate-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -144,7 +144,7 @@ export default function ExploreView() {
                 title="View Study Notes"
               >
                 <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                <span className="hidden sm:inline">Notes</span>
+                <span>Notes</span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 font-mono text-slate-600">
                   {filteredNotes.length}
                 </span>
@@ -152,7 +152,7 @@ export default function ExploreView() {
 
               <button
                 onClick={() => setViewMode('videos')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                className={`flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all ${
                   viewMode === 'videos'
                     ? 'bg-white text-slate-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
@@ -160,7 +160,7 @@ export default function ExploreView() {
                 title="View YouTube Video Lectures"
               >
                 <Video className="w-3.5 h-3.5 text-rose-600" />
-                <span className="hidden sm:inline">YouTube Hub</span>
+                <span>YouTube Hub</span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-rose-50 text-rose-700 font-mono font-bold">
                   {subjectVideosCount}
                 </span>
@@ -192,7 +192,7 @@ export default function ExploreView() {
             <select
               value={selectedSubject}
               onChange={(e) => handleSubjectChange(e.target.value)}
-              className="text-xs font-semibold bg-indigo-50/70 hover:bg-indigo-100/70 border border-indigo-200 text-indigo-900 px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 cursor-pointer"
+              className="text-xs font-semibold bg-indigo-50/70 hover:bg-indigo-100/70 border border-indigo-200 text-indigo-900 px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 cursor-pointer max-w-[170px] sm:max-w-none truncate"
             >
               <option value="All Subjects">All Subjects</option>
               {subjects.length > 0
@@ -214,7 +214,7 @@ export default function ExploreView() {
             <select
               value={selectedSemester}
               onChange={(e) => setSelectedSemester(e.target.value)}
-              className="text-xs font-medium bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 cursor-pointer"
+              className="text-xs font-medium bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-slate-700 px-3 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 cursor-pointer max-w-[130px] sm:max-w-none truncate"
             >
               {semesterOptions.map((sem) => (
                 <option key={sem} value={sem}>

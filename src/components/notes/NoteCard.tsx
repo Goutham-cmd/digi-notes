@@ -216,13 +216,13 @@ export default function NoteCard({ note, showActions = false }: NoteCardProps) {
           </div>
         </div>
 
-        {/* Actions bar */}
-        <div className="flex items-center justify-between gap-2 pt-1">
-          <span className="text-[11px] text-slate-400">
+        {/* Actions bar with Mobile Responsive Flex Wrapping */}
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
+          <span className="text-[11px] text-slate-500 font-medium shrink-0">
             {note.fileSize} {note.pageCount ? `• ${note.pageCount} pgs` : ''}
           </span>
 
-          <div className="flex items-center gap-1.5 relative z-20">
+          <div className="flex flex-wrap items-center gap-1.5 relative z-20 ml-auto justify-end">
             {showActions && note.uploader.isCurrentUser && (
               <>
                 <button
