@@ -453,6 +453,12 @@ const Galaxy = ({
     let last = 0;
     let visible = true;
 
+    const isMobileDevice =
+      typeof window !== 'undefined' &&
+      (window.innerWidth < 768 ||
+        (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ||
+        (window.matchMedia && window.matchMedia('(pointer: coarse)').matches));
+
     const render = () => {
       const s = settingsRef.current;
       s.palette.forEach((value, index) => colors.set(parse(value, [1, 1, 1]), index * 3));
@@ -460,7 +466,7 @@ const Galaxy = ({
       const background = parse(s.backgroundColor, s.lightMode ? [1, 1, 1] : [0, 0, 0]);
       const reveal = state.reveal;
       const palette = s.palette.length > 0;
-      const repel = s.autoCenterRepulsion > 0 || (s.mouseRepulsion && s.repulsionStrength > 0 && state.active > 0);
+      const repel = !isMobileDevice && (s.autoCenterRepulsion > 0 || (s.mouseRepulsion && s.repulsionStrength > 0 && state.active > 0));
       const warp = state.boost > 0;
       const base = variant(palette, false, false, true);
       if (!base) return;
@@ -475,7 +481,7 @@ const Galaxy = ({
       gl.uniform2f(u.uRotation, s.rotation[0], s.rotation[1]);
       gl.uniform1f(u.uGloss, state.gloss);
       gl.uniform1f(u.uDepth, state.depth);
-      gl.uniform1f(u.uDensity, s.density);
+      gl.uniform1f(u.uDensity, isMobileDevice ? s.density * 0.7 : s.density);
       gl.uniform1f(u.uHueShift, s.hueShift);
       gl.uniform1f(u.uSpeed, s.speed);
       gl.uniform2f(u.uMouse, state.mx, state.my);
@@ -484,13 +490,13 @@ const Galaxy = ({
       gl.uniform1f(u.uFlareGain, s.glowIntensity * s.flareIntensity);
       gl.uniform1f(u.uSquash, 1 - 1 / (stretch * stretch));
       gl.uniform1f(u.uSaturation, s.saturation);
-      gl.uniform1f(u.uMouseRepulsion, s.mouseRepulsion ? 1 : 0);
+      gl.uniform1f(u.uMouseRepulsion, !isMobileDevice && s.mouseRepulsion ? 1 : 0);
       gl.uniform1f(u.uTwinkleIntensity, s.twinkleIntensity);
       gl.uniform1f(u.uRotationAngle, state.angle);
       gl.uniform1f(u.uRepulsionStrength, s.repulsionStrength);
       gl.uniform1f(u.uMouseActiveFactor, state.active);
       gl.uniform1f(u.uAutoCenterRepulsion, s.autoCenterRepulsion);
-      gl.uniform1i(u.uLayers, s.layers);
+      gl.uniform1i(u.uLayers, isMobileDevice ? Math.min(s.layers, 3) : s.layers);
       gl.uniform3fv(u.uColors, colors);
       gl.uniform1i(u.uColorCount, s.palette.length);
       gl.uniform1f(u.uWarp, state.boost);
@@ -547,7 +553,7 @@ const Galaxy = ({
       const s = settingsRef.current;
       const width = Math.max(1, container.clientWidth);
       const height = Math.max(1, container.clientHeight);
-      const ratio = Math.min(s.dpr || window.devicePixelRatio || 1, 2);
+      const ratio = isMobileDevice ? 0.75 : Math.min(s.dpr || window.devicePixelRatio || 1, 2);
       canvas.width = Math.max(1, Math.round(width * ratio));
       canvas.height = Math.max(1, Math.round(height * ratio));
       render();
@@ -599,11 +605,13 @@ const Galaxy = ({
       }
     });
     intersection.observe(container);
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerdown', onPointerDown, { passive: true });
-    window.addEventListener('pointerup', onPointerUp, { passive: true });
-    window.addEventListener('pointercancel', onPointerUp, { passive: true });
-    document.documentElement.addEventListener('pointerleave', onPointerLeave);
+    if (!isMobileDevice) {
+      window.addEventListener('pointermove', onPointerMove, { passive: true });
+      window.addEventListener('pointerdown', onPointerDown, { passive: true });
+      window.addEventListener('pointerup', onPointerUp, { passive: true });
+      window.addEventListener('pointercancel', onPointerUp, { passive: true });
+      document.documentElement.addEventListener('pointerleave', onPointerLeave);
+    }
     document.addEventListener('visibilitychange', onVisibility);
     resize();
 

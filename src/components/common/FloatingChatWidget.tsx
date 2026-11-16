@@ -11,7 +11,7 @@ export default function FloatingChatWidget() {
   if (activeTab === 'chat') return null;
 
   return (
-    <div className="fixed bottom-6 right-6 z-40 animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <div className="fixed bottom-6 right-6 z-40 hidden sm:block animate-in fade-in slide-in-from-bottom-2 duration-300">
       <button
         onClick={() => setActiveTab('chat')}
         className="group flex items-center gap-2.5 px-4 py-2.5 bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full shadow-lg shadow-indigo-500/25 border border-indigo-400/30 transition-all hover:scale-105 active:scale-95 cursor-pointer"

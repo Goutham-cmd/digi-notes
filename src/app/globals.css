@@ -105,3 +105,41 @@ html, body {
     transform: translateY(2px) rotateZ(-0.5deg);
   }
 }
+
+/* -------------------------------------------------------------
+   Mobile Web Smooth Scrolling & 60FPS Performance Optimizations
+   ------------------------------------------------------------- */
+@media (max-width: 768px) {
+  html, body {
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+    overscroll-behavior-y: none;
+  }
+
+  /* Prevent sticky hover transforms on touch screens */
+  .card-3d-lift:hover {
+    transform: none;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .btn-3d:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Optimize modal appearance on mobile devices */
+  .modal-3d-appear {
+    animation: modalPopMobile 0.15s ease-out forwards;
+  }
+}
+
+@keyframes modalPopMobile {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}

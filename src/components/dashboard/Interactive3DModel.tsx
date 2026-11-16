@@ -51,7 +51,13 @@ export default function Interactive3DModel({
 
   // Mouse tilt tracking
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!containerRef.current || isAutoSpinning) return;
+    if (
+      !containerRef.current ||
+      isAutoSpinning ||
+      (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(pointer: coarse)').matches)
+    ) {
+      return;
+    }
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -99,8 +105,8 @@ export default function Interactive3DModel({
 
   return (
     <div className="relative w-full h-[320px] sm:h-[360px] flex items-center justify-center select-none">
-      {/* Background ambient neon glow */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      {/* Background ambient neon glow (hidden on mobile for performance) */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none hidden md:flex">
         <div className="w-56 h-56 bg-indigo-500/25 rounded-full blur-3xl animate-pulse" />
         <div className="w-40 h-40 bg-purple-500/20 rounded-full blur-2xl translate-x-12 -translate-y-8" />
       </div>
@@ -122,9 +128,9 @@ export default function Interactive3DModel({
             transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
           }}
         >
-          {/* Layer 1: Back Base Grid / Blueprint Shadow (-40px Z) */}
+          {/* Layer 1: Back Base Grid / Blueprint Shadow (Hidden on small mobile for 60fps) */}
           <div
-            className="absolute w-52 h-64 rounded-2xl bg-gradient-to-br from-indigo-950/80 to-slate-900/90 border border-indigo-500/20 shadow-2xl backdrop-blur-md flex flex-col justify-between p-4 pointer-events-none"
+            className="absolute w-52 h-64 rounded-2xl bg-gradient-to-br from-indigo-950/80 to-slate-900/90 border border-indigo-500/20 shadow-2xl backdrop-blur-md flex-col justify-between p-4 pointer-events-none hidden sm:flex"
             style={{
               transform: 'translateZ(-40px) rotateZ(-8deg)',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
@@ -148,9 +154,9 @@ export default function Interactive3DModel({
             </div>
           </div>
 
-          {/* Layer 2: Middle Floating Document Card (-10px Z) */}
+          {/* Layer 2: Middle Floating Document Card (Hidden on small mobile for 60fps) */}
           <div
-            className="absolute w-56 h-68 rounded-2xl bg-gradient-to-tr from-slate-900/95 via-indigo-950/80 to-slate-800/95 border border-indigo-400/30 shadow-xl backdrop-blur-md p-4 flex flex-col justify-between"
+            className="absolute w-56 h-68 rounded-2xl bg-gradient-to-tr from-slate-900/95 via-indigo-950/80 to-slate-800/95 border border-indigo-400/30 shadow-xl backdrop-blur-md p-4 flex-col justify-between hidden sm:flex"
             style={{
               transform: 'translateZ(-10px) rotateZ(4deg)',
             }}

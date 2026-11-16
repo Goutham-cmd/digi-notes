@@ -18,6 +18,7 @@ export { default as AuthView } from './auth/AuthView';
 export { default as Interactive3DModel } from './dashboard/Interactive3DModel';
 export { default as ThreeDCard } from './common/ThreeDCard';
 export { default as ThreeDBackground } from './common/ThreeDBackground';
+export { default as MobileNavBar } from './layout/MobileNavBar';
 export { default as YouTubeVideoSection } from './video/YouTubeVideoSection';
 export { default as YouTubeVideoCard } from './video/YouTubeVideoCard';
 export { default as YouTubePlayerModal } from './video/YouTubePlayerModal';

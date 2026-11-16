@@ -15,6 +15,7 @@ import AdminPortal from '@/components/admin/AdminPortal';
 import AuthView from '@/components/auth/AuthView';
 import ThreeDBackground from '@/components/common/ThreeDBackground';
 import FloatingChatWidget from '@/components/common/FloatingChatWidget';
+import MobileNavBar from '@/components/layout/MobileNavBar';
 import { BookOpen, Loader2 } from 'lucide-react';
 
 export default function Home() {
@@ -75,7 +76,7 @@ export default function Home() {
         <Header />
 
         {/* Dynamic Page Content with Clean 3D Transitions */}
-        <main className="flex-1 px-4 sm:px-8 py-6 max-w-7xl w-full mx-auto">
+        <main className="flex-1 px-4 sm:px-8 py-6 max-w-7xl w-full mx-auto pb-24 lg:pb-6">
           <div key={activeTab} className="animate-3d-view">
             {renderActiveView()}
           </div>
@@ -84,8 +85,11 @@ export default function Home() {
         {/* Global Floating Quick-Access Study Lounge Launcher */}
         <FloatingChatWidget />
 
+        {/* Mobile Native Bottom Navigation Bar */}
+        <MobileNavBar />
+
         {/* Minimal Campus SaaS Footer */}
-        <footer className="border-t border-slate-200/80 bg-white/70 py-4 px-4 sm:px-8 text-center sm:flex sm:items-center sm:justify-between text-xs text-slate-500">
+        <footer className="border-t border-slate-200/80 bg-white/70 py-4 px-4 sm:px-8 mb-16 lg:mb-0 text-center sm:flex sm:items-center sm:justify-between text-xs text-slate-500">
           <div>
             <span className="font-semibold text-slate-700">NoteNest</span> — Digital Notes & Resource Sharing Platform. Built for University Excellence.
           </div>

@@ -75,9 +75,9 @@ export default function ThreeDBackground() {
         />
       </div>
 
-      {/* Ambient Gradient Depth Orbs */}
-      <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl pointer-events-none -z-10" />
+      {/* Ambient Gradient Depth Orbs (Disabled on mobile to prevent compositor lag during scroll) */}
+      <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-indigo-200/20 rounded-full blur-3xl pointer-events-none -z-10 hidden md:block" />
+      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-blue-200/20 rounded-full blur-3xl pointer-events-none -z-10 hidden md:block" />
 
       {/* Inline Keyframes for 3D Floating Animations */}
       <style jsx global>{`
