@@ -8,7 +8,7 @@
 
 > **NoteNest** is an academic digital notes repository and collaborative peer study platform built for modern university students, faculty, and research labs. It unifies lecture notes, syllabus roadmaps, video lecture integrations, peer study discussions, and instant academic resource distribution into a responsive, glassmorphic web application.
 
-🔗 **Live Production Web App:** [https://digi-notes-git-main-code-breach.vercel.app](https://digi-notes-git-main-code-breach.vercel.app)
+🔗 **Live Production Web App:** [https://digi-notes-breach.vercel.app/](https://digi-notes-breach.vercel.app/)
 
 ---
 
